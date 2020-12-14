@@ -1,0 +1,37 @@
+.wrapper {
+    background: rgb(36, 41, 46);
+    padding: 10px 120px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+}
+
+.textWrapper{
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.title {
+    color: #eee;
+    font-size: 24px;
+    margin-right: 12px;
+    margin-left: 20px;
+}
+
+.tips{
+    color: #eee;
+    font-size: 14px;
+    margin-right: 12px;
+}

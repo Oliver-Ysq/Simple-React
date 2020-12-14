@@ -1,0 +1,20 @@
+footer {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #444;
+}
+
+.txt {
+    line-height: 24px;
+    height: 24px;
+}
+
+a {
+    text-decoration: none;
+    color: #333;
+}
