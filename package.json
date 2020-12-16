@@ -5,7 +5,7 @@
   "main": "index.jsx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d lib"
+    "build": "rm -rf dist && parcel build index.html --no-minify --public-url ./"
   },
   "keywords": [],
   "author": "Oliver",

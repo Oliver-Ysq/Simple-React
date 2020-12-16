@@ -52,7 +52,6 @@ export default class Component {
 
   //更新state
   setState(operater, callback) {
-    console.log('setstate');
     // 合并状态, 暂存于即将更新态中
     if (typeof operater === 'function') {
       operater = operater(this.state, this.props);

@@ -27,7 +27,14 @@ const dom = {
 
   //增加子元素
   appendChild(parent, child) {
-    parent.appendChild(child);
+    // 若在JSX中渲染列表，则需要批量处理。
+    if (Array.isArray(child)) {
+      for (let item of child) {
+        parent.appendChild(item);
+      }
+    } else {
+      parent.appendChild(child);
+    }
   },
 
   //删除指定子元素
@@ -52,12 +59,11 @@ const dom = {
   },
 
   //在后边插入节点
-  insertAfter(newNode, refNode) {
-    const parent = refNode.parentNode;
-    if (parent.lastChild === refNode) {
+  insertAfter(parent, newNode, before) {
+    if (parent.lastChild === before) {
       parent.appendChild(newNode);
     } else {
-      parent.insertBefore(newNode, refNode.nextSibling);
+      parent.insertBefore(newNode, before);
     }
   },
 

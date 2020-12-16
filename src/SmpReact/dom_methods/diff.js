@@ -107,7 +107,6 @@ function diffProps(domElm, oldProps, newProps) {
       const key = keys[i];
       const oldV = oldProps[key], newV = newProps[key];
 
-      if (key === 'className' && oldV === 'ban') console.log(key, oldV, newV);
 
       if (key.startsWith("on")) {
         //处理事件
@@ -133,17 +132,18 @@ function diffProps(domElm, oldProps, newProps) {
 
 //添加vnodes
 function addVNodes(domElm, before, children, start, end) {
-  for (let i = 0; i < end - start; i++) {
+  before = !before ? null : before.domElm;
+  for (let i = start; i <= end; i++) {
     let newDom = children[i].domElm || createDomElement(children[i]);
-    dom.insertAfter(newDom, before);
+    dom.insertAfter(domElm, newDom, before);
     before = newDom;
   }
 }
 
 //删除vnodes
 function removeVNodes(domElm, children, start, end) {
-  for (let i = 0; i < end - start; i++) {
-    dom.removeChild(domElm, children[i]);
+  for (let i = start; i <= end; i++) {
+    dom.removeChild(domElm, children[i].domElm);
   }
 }
 
@@ -155,7 +155,10 @@ function diffChildren(parentElm, oldChild, newChild) {
    * 双列表游标 + while
    */
 
-    // 初始化游标
+  if (Array.isArray(oldChild[0])) oldChild = oldChild[0];
+  if (Array.isArray(newChild[0])) newChild = newChild[0];
+
+  // 初始化游标
   let oldStartIdx = 0, newStartIdx = 0;
   let oldEndIdx = oldChild.length - 1, newEndIdx = newChild.length - 1;
 
@@ -185,6 +188,7 @@ function diffChildren(parentElm, oldChild, newChild) {
        * 移动游标，递归 diff 两个节点
        * 均未匹配上，则进入 3. key 值比对
        */
+
       diff(oldStartVNode, newStartVNode);
 
       oldStartVNode = oldChild[++oldStartIdx];
@@ -204,7 +208,7 @@ function diffChildren(parentElm, oldChild, newChild) {
       newEndVNode = newChild[--newEndIdx];
     } else if (isSameVNode(oldEndVNode, newStartVNode)) {
 
-      dom.insertBefore(parent, oldEndVNode.domElm, oldStartVNode.domElm);
+      dom.insertBefore(parentElm, oldEndVNode.domElm, oldStartVNode.domElm);
       diff(oldEndVNode, newStartVNode);
 
       oldEndVNode = oldChild[--oldEndIdx];
@@ -264,8 +268,7 @@ function diffChildren(parentElm, oldChild, newChild) {
     if (oldStartIdx > oldEndIdx) {
       // 新增节点
       const vnode = newChild[newEndIdx + 1];
-      before = vnode ? vnode.domElm : null;
-      addVNodes(parentElm, before, newChild, newStartIdx, newEndIdx);
+      addVNodes(parentElm, vnode, newChild, newStartIdx, newEndIdx);
     } else {
       // 删除节点
       removeVNodes(parentElm, oldChild, oldStartIdx, oldEndIdx);
@@ -281,9 +284,9 @@ function isSameVNode(oldVNode, newVNode) {
 //工具函数 创建key列表
 function createKeyList(children, start, end) {
   let map = {};
-  for (let i = start; i <= end - start; i++) {
+  for (let i = start; i <= end; i++) {
     const {key} = children[i];
-    map[key] = true;
+    if (key) map[key] = i;
   }
   return map;
 }

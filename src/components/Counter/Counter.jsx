@@ -7,7 +7,6 @@ export default class Counter extends SmpReact.Component {
   }
 
   render() {
-    console.log(this.props.disabled)
     return (
       <div className="listWrapper">
         <div className="display">{this.props.n}</div>
@@ -19,8 +18,8 @@ export default class Counter extends SmpReact.Component {
             <button className={this.props.disabled && 'ban'} onClick={() => this.props.clear()}>clear</button>
           </div>
           <div class="secondLine">
-            <button onClick={()=>this.props.setInterval()}>setInterval</button>
-            <button onClick={()=>this.props.clearInterval()}>clearInterval</button>
+            <button onClick={() => this.props.setInterval()}>setInterval</button>
+            <button onClick={() => this.props.clearInterval()}>clearInterval</button>
           </div>
         </div>
       </div>

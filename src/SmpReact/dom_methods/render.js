@@ -3,38 +3,44 @@ import {createVNode} from "../main_methods/createElement";
 
 // 创建dom元素：虚拟dom => dom
 export function createDomElement(vnode) {
-  //type为function：组件元素
+  //若type为function：组件元素
   //先render出vnode节点
 
   if (Array.isArray(vnode)) {
-    //如果是vnode是列表，则为他们增加父节点
-    vnode = createVNode('div', undefined, undefined, undefined, vnode, undefined);
-  }
-  if (typeof vnode.type === 'function') {
-    /**********    组件 ==> 组件实例 ==> 元素节点（elVNode）    ***********/
-    vnode = renderComponent(vnode);
-  }
-  const {children, type, text, props} = vnode;
+    //如果是vnode是列表，则批量创建dom，并返回dom列表
 
-  if (type && typeof type === 'string') {
-    //type为字符串：dom元素
-    vnode.domElm = dom.createElement(vnode);//创建当前dom元素
-    if (Array.isArray(children)) {
-      //递归创建子元素
-      for (let i = 0; i < children.length; i++) {
-        dom.appendChild(vnode.domElm, createDomElement(children[i]));
-      }
+    let list = [];
+    for (let i = 0; i < vnode.length; i++) {
+      list.push(createDomElement(vnode[i]));
     }
-  } else if ((type === undefined || type === null) && text) {
-    //type为undefined：文本节点
-    vnode.domElm = dom.createTextNode(text);
-  }
+    return list;
 
-  if (vnode.domElm) {//如果创建成功了，则设置dom元素的属性
-    setDomProps(vnode.domElm, props);
-    return vnode.domElm;
-  } else {  //创建失败，则renderComponent后的vnode依然是组件节点，需要递归rener
-    return createDomElement(vnode);
+  } else {
+    if (typeof vnode.type === 'function') {
+      /**********    组件 ==> 组件实例 ==> 元素节点（elVNode）    ***********/
+      vnode = renderComponent(vnode);
+    }
+    const {children, type, text, props} = vnode;
+    if (type && typeof type === 'string') {
+      //type为字符串：dom元素
+      vnode.domElm = dom.createElement(vnode);//创建当前dom元素
+      if (Array.isArray(children)) {
+        //递归创建子元素
+        for (let i = 0; i < children.length; i++) {
+          dom.appendChild(vnode.domElm, createDomElement(children[i]));
+        }
+      }
+    } else if ((type === undefined || type === null) && text) {
+      //type为undefined：文本节点
+      vnode.domElm = dom.createTextNode(text);
+    }
+
+    if (vnode.domElm) {//如果创建成功了，则设置dom元素的属性
+      setDomProps(vnode.domElm, props);
+      return vnode.domElm;
+    } else {  //创建失败，则renderComponent后的vnode依然是组件节点，需要递归rener
+      return createDomElement(vnode);
+    }
   }
 }
 
@@ -98,7 +104,7 @@ export function renderComponent(compVNode) {
 
 // 渲染函数
 export default function render(vnode, parentDom) {
-  const domElm = createDomElement(vnode); //创建dom元素
+  const domElm = createDomElement(vnode); //创建dom元素（可能是dom元素列表）
   dom.appendChild(parentDom, domElm);  //将dom元素插入父节点
   return domElm;
 }
