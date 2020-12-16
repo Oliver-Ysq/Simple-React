@@ -24,9 +24,9 @@ export function createDomElement(vnode) {
       vnode.domElm = dom.createElement(vnode);//创建当前dom元素
       if (Array.isArray(children)) {
         //递归创建子元素
-        for (let i = 0; i < children.length; i++) {
+        for (let i = 0; i < children.length; i++)
           dom.appendChild(vnode.domElm, createDomElement(children[i]));
-        }
+
       }
     } else if ((type === undefined || type === null) && text) {
       //type为undefined：文本节点
