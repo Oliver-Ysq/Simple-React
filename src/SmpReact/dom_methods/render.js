@@ -1,5 +1,4 @@
 import dom from "../utils/dom";
-import {createVNode} from "../main_methods/createElement";
 
 // 创建dom元素：虚拟dom => dom
 export function createDomElement(vnode) {
@@ -10,9 +9,8 @@ export function createDomElement(vnode) {
     //如果是vnode是列表，则批量创建dom，并返回dom列表
 
     let list = [];
-    for (let i = 0; i < vnode.length; i++) {
+    for (let i = 0; i < vnode.length; i++)
       list.push(createDomElement(vnode[i]));
-    }
     return list;
 
   } else {
@@ -59,7 +57,7 @@ export function setDomProps(domElm, props) {
           const eventName = key.substring(2).toLowerCase();  // 去出on之后的字符串并转换为小写
           dom.bindEvent(domElm, eventName, value);
         } else {
-          console.log('invalid eventHandler');
+          console.log('Invalid EventHandler');
         }
       } else if (key === 'className') {
         // 添加class

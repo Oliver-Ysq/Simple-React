@@ -117,7 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/SmpReact/main_methods/createElement.js":[function(require,module,exports) {
+})({"E7Fp":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -175,7 +175,7 @@ function createElement(tag) {
 
   return createVNode(type, props, ref, key, children, undefined, undefined);
 }
-},{}],"src/SmpReact/utils/dom.js":[function(require,module,exports) {
+},{}],"FhTM":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -283,7 +283,7 @@ var dom = {
 };
 var _default = dom;
 exports.default = _default;
-},{}],"src/SmpReact/dom_methods/render.js":[function(require,module,exports) {
+},{}],"QABK":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -295,8 +295,6 @@ exports.renderComponent = renderComponent;
 exports.default = render;
 
 var _dom = _interopRequireDefault(require("../utils/dom"));
-
-var _createElement = require("../main_methods/createElement");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -369,7 +367,7 @@ function setDomProps(domElm, props) {
 
           _dom.default.bindEvent(domElm, eventName, value);
         } else {
-          console.log('invalid eventHandler');
+          console.log('Invalid EventHandler');
         }
       } else if (key === 'className') {
         // 添加class
@@ -426,7 +424,7 @@ function render(vnode, parentDom) {
 
   return domElm;
 }
-},{"../utils/dom":"src/SmpReact/utils/dom.js","../main_methods/createElement":"src/SmpReact/main_methods/createElement.js"}],"src/SmpReact/dom_methods/diff.js":[function(require,module,exports) {
+},{"../utils/dom":"FhTM"}],"Fq0C":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -729,7 +727,7 @@ function createKeyList(children, start, end) {
 
   return map;
 }
-},{"../utils/dom":"src/SmpReact/utils/dom.js","./render":"src/SmpReact/dom_methods/render.js"}],"src/SmpReact/main_methods/update.js":[function(require,module,exports) {
+},{"../utils/dom":"FhTM","./render":"QABK"}],"gvwW":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -793,7 +791,7 @@ function flushCallback(updater) {
     }
   }
 }
-},{}],"src/SmpReact/main_methods/Component.js":[function(require,module,exports) {
+},{}],"noHc":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -891,7 +889,7 @@ var Component = /*#__PURE__*/function () {
 }();
 
 exports.default = Component;
-},{"../dom_methods/diff":"src/SmpReact/dom_methods/diff.js","./update":"src/SmpReact/main_methods/update.js"}],"src/SmpReact/SmpReact.js":[function(require,module,exports) {
+},{"../dom_methods/diff":"Fq0C","./update":"gvwW"}],"opxX":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -911,7 +909,7 @@ var SmpReact = {
 };
 var _default = SmpReact;
 exports.default = _default;
-},{"./main_methods/createElement":"src/SmpReact/main_methods/createElement.js","./main_methods/Component":"src/SmpReact/main_methods/Component.js"}],"src/SmpReact/SmpReactDom.js":[function(require,module,exports) {
+},{"./main_methods/createElement":"E7Fp","./main_methods/Component":"noHc"}],"Ki7F":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -928,86 +926,11 @@ var SmpReactDom = {
 };
 var _default = SmpReactDom;
 exports.default = _default;
-},{"./dom_methods/render":"src/SmpReact/dom_methods/render.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+},{"./dom_methods/render":"QABK"}],"EQHX":[function(require,module,exports) {
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
-
-  return bundleURL;
-}
-
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
-
-    if (matches) {
-      return getBaseURL(matches[0]);
-    }
-  }
-
-  return '/';
-}
-
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
-
-function updateLink(link) {
-  var newLink = link.cloneNode();
-
-  newLink.onload = function () {
-    link.remove();
-  };
-
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
-
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
-  }
-
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
-    }
-
-    cssTimeout = null;
-  }, 50);
-}
-
-module.exports = reloadCSS;
-},{"./bundle-url":"node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"App.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/assets/gamepad.png":[function(require,module,exports) {
-module.exports = "/gamepad.1dac9da6.png";
-},{}],"src/components/Header/style.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/components/Header/Header.jsx":[function(require,module,exports) {
+},{}],"H8l0":[function(require,module,exports) {
+module.exports = "gamepad.80fea397.png";
+},{}],"nikT":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1105,12 +1028,7 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = Footer;
-},{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","../../assets/gamepad.png":"src/assets/gamepad.png","./style.css":"src/components/Header/style.css"}],"src/components/Footer/style.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/components/Footer/Footer.jsx":[function(require,module,exports) {
+},{"../../SmpReact/SmpReact":"opxX","../../assets/gamepad.png":"H8l0","./style.css":"EQHX"}],"vyL3":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1191,12 +1109,7 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = Footer;
-},{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./style.css":"src/components/Footer/style.css"}],"src/components/Counter/style.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/components/Counter/Counter.jsx":[function(require,module,exports) {
+},{"../../SmpReact/SmpReact":"opxX","./style.css":"EQHX"}],"iR8q":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1336,7 +1249,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = Counter;
-},{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./style.css":"src/components/Counter/style.css"}],"App.jsx":[function(require,module,exports) {
+},{"../../SmpReact/SmpReact":"opxX","./style.css":"EQHX"}],"DPRK":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1520,7 +1433,7 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = App;
-},{"./src/SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./App.css":"App.css","./src/components/Header/Header":"src/components/Header/Header.jsx","./src/components/Footer/Footer":"src/components/Footer/Footer.jsx","./src/components/Counter/Counter":"src/components/Counter/Counter.jsx"}],"index.jsx":[function(require,module,exports) {
+},{"./src/SmpReact/SmpReact":"opxX","./App.css":"EQHX","./src/components/Header/Header":"nikT","./src/components/Footer/Footer":"vyL3","./src/components/Counter/Counter":"iR8q"}],"deHo":[function(require,module,exports) {
 "use strict";
 
 var _SmpReact = _interopRequireDefault(require("./src/SmpReact/SmpReact"));
@@ -1536,209 +1449,5 @@ _SmpReactDom.default.render(_SmpReact.default.createElement({
   attributes: {},
   children: null
 }), document.getElementById("root"));
-},{"./src/SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./src/SmpReact/SmpReactDom":"src/SmpReact/SmpReactDom.js","./App":"App.jsx"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
-var global = arguments[3];
-var OVERLAY_ID = '__parcel__error__overlay__';
-var OldModule = module.bundle.Module;
-
-function Module(moduleName) {
-  OldModule.call(this, moduleName);
-  this.hot = {
-    data: module.bundle.hotData,
-    _acceptCallbacks: [],
-    _disposeCallbacks: [],
-    accept: function (fn) {
-      this._acceptCallbacks.push(fn || function () {});
-    },
-    dispose: function (fn) {
-      this._disposeCallbacks.push(fn);
-    }
-  };
-  module.bundle.hotData = null;
-}
-
-module.bundle.Module = Module;
-var checkedAssets, assetsToAccept;
-var parent = module.bundle.parent;
-
-if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
-  var hostname = "" || location.hostname;
-  var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "4419" + '/');
-
-  ws.onmessage = function (event) {
-    checkedAssets = {};
-    assetsToAccept = [];
-    var data = JSON.parse(event.data);
-
-    if (data.type === 'update') {
-      var handled = false;
-      data.assets.forEach(function (asset) {
-        if (!asset.isNew) {
-          var didAccept = hmrAcceptCheck(global.parcelRequire, asset.id);
-
-          if (didAccept) {
-            handled = true;
-          }
-        }
-      }); // Enable HMR for CSS by default.
-
-      handled = handled || data.assets.every(function (asset) {
-        return asset.type === 'css' && asset.generated.js;
-      });
-
-      if (handled) {
-        console.clear();
-        data.assets.forEach(function (asset) {
-          hmrApply(global.parcelRequire, asset);
-        });
-        assetsToAccept.forEach(function (v) {
-          hmrAcceptRun(v[0], v[1]);
-        });
-      } else if (location.reload) {
-        // `location` global exists in a web worker context but lacks `.reload()` function.
-        location.reload();
-      }
-    }
-
-    if (data.type === 'reload') {
-      ws.close();
-
-      ws.onclose = function () {
-        location.reload();
-      };
-    }
-
-    if (data.type === 'error-resolved') {
-      console.log('[parcel] ✨ Error resolved');
-      removeErrorOverlay();
-    }
-
-    if (data.type === 'error') {
-      console.error('[parcel] 🚨  ' + data.error.message + '\n' + data.error.stack);
-      removeErrorOverlay();
-      var overlay = createErrorOverlay(data);
-      document.body.appendChild(overlay);
-    }
-  };
-}
-
-function removeErrorOverlay() {
-  var overlay = document.getElementById(OVERLAY_ID);
-
-  if (overlay) {
-    overlay.remove();
-  }
-}
-
-function createErrorOverlay(data) {
-  var overlay = document.createElement('div');
-  overlay.id = OVERLAY_ID; // html encode message and stack trace
-
-  var message = document.createElement('div');
-  var stackTrace = document.createElement('pre');
-  message.innerText = data.error.message;
-  stackTrace.innerText = data.error.stack;
-  overlay.innerHTML = '<div style="background: black; font-size: 16px; color: white; position: fixed; height: 100%; width: 100%; top: 0px; left: 0px; padding: 30px; opacity: 0.85; font-family: Menlo, Consolas, monospace; z-index: 9999;">' + '<span style="background: red; padding: 2px 4px; border-radius: 2px;">ERROR</span>' + '<span style="top: 2px; margin-left: 5px; position: relative;">🚨</span>' + '<div style="font-size: 18px; font-weight: bold; margin-top: 20px;">' + message.innerHTML + '</div>' + '<pre>' + stackTrace.innerHTML + '</pre>' + '</div>';
-  return overlay;
-}
-
-function getParents(bundle, id) {
-  var modules = bundle.modules;
-
-  if (!modules) {
-    return [];
-  }
-
-  var parents = [];
-  var k, d, dep;
-
-  for (k in modules) {
-    for (d in modules[k][1]) {
-      dep = modules[k][1][d];
-
-      if (dep === id || Array.isArray(dep) && dep[dep.length - 1] === id) {
-        parents.push(k);
-      }
-    }
-  }
-
-  if (bundle.parent) {
-    parents = parents.concat(getParents(bundle.parent, id));
-  }
-
-  return parents;
-}
-
-function hmrApply(bundle, asset) {
-  var modules = bundle.modules;
-
-  if (!modules) {
-    return;
-  }
-
-  if (modules[asset.id] || !bundle.parent) {
-    var fn = new Function('require', 'module', 'exports', asset.generated.js);
-    asset.isNew = !modules[asset.id];
-    modules[asset.id] = [fn, asset.deps];
-  } else if (bundle.parent) {
-    hmrApply(bundle.parent, asset);
-  }
-}
-
-function hmrAcceptCheck(bundle, id) {
-  var modules = bundle.modules;
-
-  if (!modules) {
-    return;
-  }
-
-  if (!modules[id] && bundle.parent) {
-    return hmrAcceptCheck(bundle.parent, id);
-  }
-
-  if (checkedAssets[id]) {
-    return;
-  }
-
-  checkedAssets[id] = true;
-  var cached = bundle.cache[id];
-  assetsToAccept.push([bundle, id]);
-
-  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
-    return true;
-  }
-
-  return getParents(global.parcelRequire, id).some(function (id) {
-    return hmrAcceptCheck(global.parcelRequire, id);
-  });
-}
-
-function hmrAcceptRun(bundle, id) {
-  var cached = bundle.cache[id];
-  bundle.hotData = {};
-
-  if (cached) {
-    cached.hot.data = bundle.hotData;
-  }
-
-  if (cached && cached.hot && cached.hot._disposeCallbacks.length) {
-    cached.hot._disposeCallbacks.forEach(function (cb) {
-      cb(bundle.hotData);
-    });
-  }
-
-  delete bundle.cache[id];
-  bundle(id);
-  cached = bundle.cache[id];
-
-  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
-    cached.hot._acceptCallbacks.forEach(function (cb) {
-      cb();
-    });
-
-    return true;
-  }
-}
-},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","index.jsx"], null)
-//# sourceMappingURL=/simple-react.78399e21.js.map
+},{"./src/SmpReact/SmpReact":"opxX","./src/SmpReact/SmpReactDom":"Ki7F","./App":"DPRK"}]},{},["deHo"], null)
+//# sourceMappingURL=simple-react.54dec209.js.map
