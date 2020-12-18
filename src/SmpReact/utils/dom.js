@@ -1,5 +1,5 @@
 /*
-  原生dom操作
+* 原生dom操作
 * */
 
 const dom = {
@@ -58,7 +58,7 @@ const dom = {
     }
   },
 
-  //在后边插入节点
+  //在dom后边插入新dom
   insertAfter(parent, newNode, before) {
     if (parent.lastChild === before) {
       parent.appendChild(newNode);
@@ -67,15 +67,10 @@ const dom = {
     }
   },
 
-  //绑定class
+  //绑定一个或多个class
   addClass(domElm, classList) {
-    if (typeof classList === 'string')
-      domElm.classList.add(classList);
-    else if (Array.isArray(classList)) {
-      for (let cls of classList) {
-        domElm.classList.add(cls);
-      }
-    }
+    if (typeof classList === 'string') domElm.classList.add(classList);
+    else if (Array.isArray(classList)) domElm.classList.add(...classList);
   }
   ,
 
@@ -98,6 +93,12 @@ const dom = {
   removeAttr(domElm, key) {
     domElm.removeAttribute(key);
   },
+
+  //删除一个或多个class
+  removeClass(domElm, className) {
+    if (typeof className === 'string') domElm.class.remove(className);
+    else if (Array.isArray(className)) domElm.classList.remove(...className);
+  }
 
 };
 export default dom;

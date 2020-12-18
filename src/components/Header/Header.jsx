@@ -18,10 +18,10 @@ export default class Header extends SmpReact.Component {
           </div>
         </div>
         <div className="buttons">
-          <div className={this.props.page === 0 ? 'title active' : 'title'}
+          <div className={(this.props.page === 0 ? 'active' : '')+' title pointer'}
                onClick={() => this.props.setPage(0)}>Counter
           </div>
-          <div className={this.props.page === 1 ? 'title active' : 'title'}
+          <div className={(this.props.page === 1 ? 'active' : '')+' title pointer'}
                onClick={() => this.props.setPage(1)}>TodoList
           </div>
         </div>

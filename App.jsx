@@ -10,8 +10,9 @@ export default class App extends SmpReact.Component {
     super();
     this.state = {
       n: 0,
-      list: [{content: "汽车", done: false}, {content: "写作业", done: false}],
-      page: 0,
+      list: [{content: "周末去爬山", id: 0, done: false}, {content: "周五之前把作业写完", id: 1, done: false},
+        {content: "刷鞋", id: 2, done: false}],
+      page: 1,
     };
 
     this.setN = (newN) => {
@@ -22,11 +23,11 @@ export default class App extends SmpReact.Component {
       this.setState({page: newPage});
     };
 
-  };
+    this.setList = (newList) => {
+      this.setState({list: newList});
+    };
 
-  componentDidMount() {
-    console.log('App mount');
-  }
+  };
 
   render() {
     return (
@@ -34,7 +35,7 @@ export default class App extends SmpReact.Component {
         <Header setPage={(n) => this.setPage(n)} page={this.state.page}/>
         <main>
           <Counter className={this.state.page === 1 ? 'none' : ''} setN={(n) => {this.setN(n);}} n={this.state.n}/>
-          <TodoList className={this.state.page === 0 ? 'none' : ''} list={this.state.list}/>
+          <TodoList className={this.state.page === 0 ? 'none' : ''} list={this.state.list} setList={this.setList}/>
         </main>
         <Footer/>
       </div>

@@ -101,9 +101,7 @@ export default class Component {
     // 调用更新，并执行回调
     callback && this.__setStateCallbacks.push(callback);
 
-    //值有改变才render
-    if (!deepEqual(this.state, this.__nextState))
-      enqueueRender(this);
+    enqueueRender(this);
   }
 
   //更新状态，调用diff

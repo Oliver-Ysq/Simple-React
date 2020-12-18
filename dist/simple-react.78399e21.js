@@ -183,6 +183,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -192,7 +200,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*
-  原生dom操作
+* 原生dom操作
 * */
 var dom = {
   //根据vnode.type创建dom元素
@@ -252,7 +260,7 @@ var dom = {
       dom.appendChild(parent, newNode);
     }
   },
-  //在后边插入节点
+  //在dom后边插入新dom
   insertAfter: function insertAfter(parent, newNode, before) {
     if (parent.lastChild === before) {
       parent.appendChild(newNode);
@@ -260,23 +268,11 @@ var dom = {
       parent.insertBefore(newNode, before);
     }
   },
-  //绑定class
+  //绑定一个或多个class
   addClass: function addClass(domElm, classList) {
-    if (typeof classList === 'string') domElm.classList.add(classList);else if (Array.isArray(classList)) {
-      var _iterator2 = _createForOfIteratorHelper(classList),
-          _step2;
+    var _domElm$classList;
 
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var cls = _step2.value;
-          domElm.classList.add(cls);
-        }
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
-      }
-    }
+    if (typeof classList === 'string') domElm.classList.add(classList);else if (Array.isArray(classList)) (_domElm$classList = domElm.classList).add.apply(_domElm$classList, _toConsumableArray(classList));
   },
   //绑定事件
   bindEvent: function bindEvent(domElm, type, fn) {
@@ -293,6 +289,12 @@ var dom = {
   //删除属性
   removeAttr: function removeAttr(domElm, key) {
     domElm.removeAttribute(key);
+  },
+  //删除一个或多个class
+  removeClass: function removeClass(domElm, className) {
+    var _domElm$classList2;
+
+    if (typeof className === 'string') domElm.class.remove(className);else if (Array.isArray(className)) (_domElm$classList2 = domElm.classList).remove.apply(_domElm$classList2, _toConsumableArray(className));
   }
 };
 var _default = dom;
@@ -444,7 +446,9 @@ function setDomProps(domElm, props) {
         }
       } else if (key === 'className' && typeof value === 'string') {
         // 添加class
-        var classList = value.split(" ");
+        var classList = value.split(" ").filter(function (v) {
+          return v !== "";
+        });
 
         _dom.default.addClass(domElm, classList);
       } else {
@@ -601,8 +605,10 @@ function diffVNode(oldVNode, newVNode) {
 function replaceVNode(oldVNode, newVNode) {
   var oldDomElm = oldVNode.domElm;
 
-  var parentDom = _dom.default.getParentNode(oldDomElm); //删除旧dom
+  var parentDom = _dom.default.getParentNode(oldDomElm);
 
+  console.log(oldVNode, newVNode);
+  (0, _lifeCycle.triggerHook)(oldDomElm, 'willremove'); //删除旧dom
 
   _dom.default.removeChild(parentDom, oldDomElm); //创建新dom
 
@@ -638,9 +644,21 @@ function diffProps(domElm, oldProps, newProps) {
         }
       } else {
         //普通属性处理
-        if (newV === undefined || key === 'className' && (newV === false || newV === null)) {
+        if (newV === undefined) {
           // 若oldVNode中的属性在newVNode中不存在，则直接删除
           _dom.default.removeAttr(domElm, key === 'className' ? 'class' : key);
+        } else if (key === 'className' && typeof newV === 'string') {
+          (function () {
+            var oldList = oldV.split(" ");
+            var newList = newV.split(" ");
+            var delList = oldList.filter(function (v) {
+              return !newList.includes(v);
+            }).filter(function (v) {
+              return v !== "";
+            });
+
+            _dom.default.removeClass(domElm, delList);
+          })();
         }
       }
     } // 设置新属性
@@ -1007,9 +1025,8 @@ var Component = /*#__PURE__*/function () {
 
       this.__nextState = _extends({}, this.state, operater); // 调用更新，并执行回调
 
-      callback && this.__setStateCallbacks.push(callback); //值有改变才render
-
-      if (!deepEqual(this.state, this.__nextState)) (0, _update.enqueueRender)(this);
+      callback && this.__setStateCallbacks.push(callback);
+      (0, _update.enqueueRender)(this);
     } //更新状态，调用diff
 
   }, {
@@ -1271,7 +1288,7 @@ var Header = /*#__PURE__*/function (_SmpReact$Component) {
           children: [_SmpReact.default.createElement({
             elementName: "div",
             attributes: {
-              className: this.props.page === 0 ? 'title active' : 'title',
+              className: (this.props.page === 0 ? 'active' : '') + ' title pointer',
               onClick: function onClick() {
                 return _this.props.setPage(0);
               }
@@ -1280,7 +1297,7 @@ var Header = /*#__PURE__*/function (_SmpReact$Component) {
           }), _SmpReact.default.createElement({
             elementName: "div",
             attributes: {
-              className: this.props.page === 1 ? 'title active' : 'title',
+              className: (this.props.page === 1 ? 'active' : '') + ' title pointer',
               onClick: function onClick() {
                 return _this.props.setPage(1);
               }
@@ -1520,9 +1537,14 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
       });
     })
   }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate(prevProps, prevState, snapshot) {
-      console.log('Counter update');
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      console.log('Counter Mount！');
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      console.log('Counter unmount！');
     }
   }, {
     key: "render",
@@ -1549,7 +1571,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled && 'ban',
+                className: this.state.disabled ? 'ban' : '',
                 id: 1,
                 onClick: this.calc
               },
@@ -1557,7 +1579,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled && 'ban',
+                className: this.state.disabled ? 'ban' : '',
                 id: 2,
                 onClick: this.calc
               },
@@ -1565,7 +1587,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled && 'ban',
+                className: this.state.disabled ? 'ban' : '',
                 id: 3,
                 onClick: this.calc
               },
@@ -1573,7 +1595,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled && 'ban',
+                className: this.state.disabled ? 'ban' : '',
                 id: 4,
                 onClick: this.calc
               },
@@ -1654,25 +1676,100 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
   var _super = _createSuper(TodoList);
 
   function TodoList(props) {
+    var _this;
+
     _classCallCheck(this, TodoList);
 
-    return _super.call(this, props);
+    _this = _super.call(this, props);
+    _this.handleDelete = _this.handleDelete.bind(_assertThisInitialized(_this));
+    _this.handleFinish = _this.handleFinish.bind(_assertThisInitialized(_this));
+    return _this;
   }
 
   _createClass(TodoList, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      console.log('todoList Mount！');
+    }
+  }, {
+    key: "handleFinish",
+    value: function handleFinish(e) {
+      var list = this.props.list;
+      var len = list.length,
+          newList = [],
+          finishItem;
+
+      for (var i = 0; i < len; i++) {
+        if (parseInt(list[i].id) === parseInt(e.target.id)) {
+          if (list[i].done === true) return;
+          list[i].done = true;
+          finishItem = list[i];
+        } else newList.push(list[i]);
+      }
+
+      newList.push(finishItem);
+      this.props.setList(newList);
+    }
+  }, {
+    key: "handleDelete",
+    value: function handleDelete(e) {
+      this.props.setList(this.props.list.filter(function (v) {
+        return parseInt(v.id) !== parseInt(e.target.id);
+      }));
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this2 = this;
+
       return _SmpReact.default.createElement({
         elementName: "div",
         attributes: {
-          className: "listWrapper"
+          className: "listWrapper todoWrapper"
         },
         children: [this.props.list.map(function (v) {
           return _SmpReact.default.createElement({
             elementName: "div",
-            attributes: {},
-            children: [v.content]
+            attributes: {
+              key: v.id,
+              className: "card"
+            },
+            children: [_SmpReact.default.createElement({
+              elementName: "div",
+              attributes: {
+                className: (v.done ? 'finish-text' : '') + " card-content"
+              },
+              children: [v.content]
+            }), _SmpReact.default.createElement({
+              elementName: "div",
+              attributes: {
+                className: "card-btn"
+              },
+              children: [_SmpReact.default.createElement({
+                elementName: "button",
+                attributes: {
+                  className: "finish-btn",
+                  id: v.id,
+                  onClick: _this2.handleFinish
+                },
+                children: ["\u5B8C\u6210"]
+              }), _SmpReact.default.createElement({
+                elementName: "button",
+                attributes: {
+                  className: "del-btn",
+                  id: v.id,
+                  onClick: _this2.handleDelete
+                },
+                children: ["\u5220\u9664"]
+              })]
+            })]
           });
+        }), _SmpReact.default.createElement({
+          elementName: "div",
+          attributes: {
+            className: "newItem"
+          },
+          children: ["\u6DFB\u52A0"]
         })]
       });
     }
@@ -1740,13 +1837,19 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
     _this.state = {
       n: 0,
       list: [{
-        content: "汽车",
+        content: "周末去爬山",
+        id: 0,
         done: false
       }, {
-        content: "写作业",
+        content: "周五之前把作业写完",
+        id: 1,
+        done: false
+      }, {
+        content: "刷鞋",
+        id: 2,
         done: false
       }],
-      page: 0
+      page: 1
     };
 
     _this.setN = function (newN) {
@@ -1761,15 +1864,16 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
       });
     };
 
+    _this.setList = function (newList) {
+      _this.setState({
+        list: newList
+      });
+    };
+
     return _this;
   }
 
   _createClass(App, [{
-    key: "componentDidMount",
-    value: function componentDidMount() {
-      console.log('App mount');
-    }
-  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
@@ -1805,7 +1909,8 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
             elementName: _TodoList.default,
             attributes: {
               className: this.state.page === 0 ? 'none' : '',
-              list: this.state.list
+              list: this.state.list,
+              setList: this.setList
             },
             children: null
           })]
@@ -1866,7 +1971,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3429" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6356" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

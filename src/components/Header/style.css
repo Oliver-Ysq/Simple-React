@@ -39,6 +39,10 @@
     margin-left: 20px;
 }
 
+.pointer:hover {
+    cursor: pointer;
+}
+
 .tips {
     color: #eee;
     font-size: 14px;

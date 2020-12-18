@@ -69,7 +69,7 @@ export function setDomProps(domElm, props) {
         }
       } else if (key === 'className' && typeof value === 'string') {
         // 添加class
-        let classList = value.split(" ");
+        let classList = value.split(" ").filter(v => v !== "");
         dom.addClass(domElm, classList);
       } else {
         // 属性设置

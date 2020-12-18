@@ -88,7 +88,9 @@ function replaceVNode(oldVNode, newVNode) {
 
   const {domElm: oldDomElm} = oldVNode;
   const parentDom = dom.getParentNode(oldDomElm);
+  console.log(oldVNode, newVNode);
 
+  triggerHook(oldDomElm, 'willremove');
   //删除旧dom
   dom.removeChild(parentDom, oldDomElm);
   //创建新dom
@@ -110,7 +112,7 @@ function diffProps(domElm, oldProps, newProps) {
 
       if (key.startsWith("on")) {
         //处理事件
-        if (typeof oldV === 'function' && oldV !== newV ) {
+        if (typeof oldV === 'function' && oldV !== newV) {
 
           //当存在旧事件，且新旧值不一致时：事件解绑
           //由于检测逻辑是对比函数地址，所以不支持行内使用：
@@ -122,9 +124,16 @@ function diffProps(domElm, oldProps, newProps) {
         }
       } else {
         //普通属性处理
-        if (newV === undefined || (key === 'className' && (newV === false || newV === null))) {
+        if (newV === undefined) {
           // 若oldVNode中的属性在newVNode中不存在，则直接删除
           dom.removeAttr(domElm, key === 'className' ? 'class' : key);
+        } else if (key === 'className' && typeof newV === 'string') {
+          let oldList = oldV.split(" ");
+          let newList = newV.split(" ");
+          let delList = oldList.filter(v => {
+            return !(newList.includes(v));
+          }).filter(v => v !== "");
+          dom.removeClass(domElm, delList);
         }
       }
     }
