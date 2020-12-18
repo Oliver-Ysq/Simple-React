@@ -33,7 +33,7 @@ export default class App extends SmpReact.Component {
         <Header/>
         <main>
           <Counter setN={(n) => {this.setN(n);}} n={this.state.n}/>
-          <TodoList className="none" list={this.state.list}/>
+          <TodoList className="" list={this.state.list}/>
         </main>
         <Footer/>
       </div>

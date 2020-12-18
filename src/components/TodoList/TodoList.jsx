@@ -9,7 +9,7 @@ export default class TodoList extends SmpReact.Component {
   render() {
     return (
       <div className="listWrapper">
-        todo
+        {this.props.list.map(v=><div>{v.content}</div>)}
       </div>
     );
   }

@@ -17,9 +17,7 @@ export function createDomElement(vnode) {
   } else {
     if (typeof vnode.type === 'function') {
       /**********    组件 ==> 组件实例 ==> 元素节点（elVNode）    ***********/
-      console.log(vnode)
       vnode = renderComponent(vnode);
-
     }
     const {children, type, text, props} = vnode;
     if (type && typeof type === 'string') {
@@ -31,7 +29,7 @@ export function createDomElement(vnode) {
         for (let i = 0; i < children.length; i++) {
           let newDom = createDomElement(children[i]);
           dom.appendChild(vnode.domElm, newDom);
-          triggerHook(newDom.vnode, 'insert');
+          triggerHook(Array.isArray(newDom) ? newDom[0].vnode : newDom.vnode, 'insert');
         }
 
       }
@@ -100,6 +98,9 @@ export function renderComponent(compVNode) {
 
   // 调用 render 获取元素节点 VNode
   const vnode = instance.__createVNode();
+
+  //class继承
+  if (props.className) vnode.props.className = props.className;
 
   // 组件、元素、实例之间保持相互引用，有利于双向连接整棵虚拟树
   instance.__component = compVNode; //组件

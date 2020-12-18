@@ -368,7 +368,6 @@ function createDomElement(vnode) {
   } else {
     if (typeof vnode.type === 'function') {
       /**********    组件 ==> 组件实例 ==> 元素节点（elVNode）    ***********/
-      console.log(vnode);
       vnode = renderComponent(vnode);
     }
 
@@ -390,7 +389,7 @@ function createDomElement(vnode) {
 
           _dom.default.appendChild(vnode.domElm, newDom);
 
-          (0, _lifeCycle.triggerHook)(newDom.vnode, 'insert');
+          (0, _lifeCycle.triggerHook)(Array.isArray(newDom) ? newDom[0].vnode : newDom.vnode, 'insert');
         }
       }
     } else if ((type === undefined || type === null) && text) {
@@ -461,8 +460,10 @@ function renderComponent(compVNode) {
   } // 调用 render 获取元素节点 VNode
 
 
-  var vnode = instance.__createVNode(); // 组件、元素、实例之间保持相互引用，有利于双向连接整棵虚拟树
+  var vnode = instance.__createVNode(); //class继承
 
+
+  if (props.className) vnode.props.className = props.className; // 组件、元素、实例之间保持相互引用，有利于双向连接整棵虚拟树
 
   instance.__component = compVNode; //组件
 
@@ -1590,7 +1591,13 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
         attributes: {
           className: "listWrapper"
         },
-        children: ["todo"]
+        children: [this.props.list.map(function (v) {
+          return _SmpReact.default.createElement({
+            elementName: "div",
+            attributes: {},
+            children: [v.content]
+          });
+        })]
       });
     }
   }]);
@@ -1715,7 +1722,7 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
           }), _SmpReact.default.createElement({
             elementName: _TodoList.default,
             attributes: {
-              className: "none",
+              className: "",
               list: this.state.list
             },
             children: null
