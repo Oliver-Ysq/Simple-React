@@ -30,10 +30,10 @@ export default class App extends SmpReact.Component {
   render() {
     return (
       <div className="page">
-        <Header/>
+        <Header page={this.state.page}/>
         <main>
-          <Counter setN={(n) => {this.setN(n);}} n={this.state.n}/>
-          <TodoList className="" list={this.state.list}/>
+          <Counter className={this.state.page === 1 ? 'none' : ''} setN={(n) => {this.setN(n);}} n={this.state.n}/>
+          <TodoList className={this.state.page === 0 ? 'none' : ''} list={this.state.list}/>
         </main>
         <Footer/>
       </div>

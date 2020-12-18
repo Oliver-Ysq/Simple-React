@@ -67,9 +67,10 @@ export function setDomProps(domElm, props) {
         } else {
           console.log('Invalid EventHandler');
         }
-      } else if (key === 'className') {
+      } else if (key === 'className' && typeof value === 'string') {
         // 添加class
-        dom.addClass(domElm, value);
+        let classList = value.split(" ");
+        dom.addClass(domElm, classList);
       } else {
         // 属性设置
         dom.setAttr(domElm, key, value);

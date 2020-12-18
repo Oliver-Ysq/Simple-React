@@ -261,8 +261,22 @@ var dom = {
     }
   },
   //绑定class
-  addClass: function addClass(domElm, className) {
-    domElm.classList.add(className);
+  addClass: function addClass(domElm, classList) {
+    if (typeof classList === 'string') domElm.classList.add(classList);else if (Array.isArray(classList)) {
+      var _iterator2 = _createForOfIteratorHelper(classList),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var cls = _step2.value;
+          domElm.classList.add(cls);
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+    }
   },
   //绑定事件
   bindEvent: function bindEvent(domElm, type, fn) {
@@ -428,9 +442,11 @@ function setDomProps(domElm, props) {
         } else {
           console.log('Invalid EventHandler');
         }
-      } else if (key === 'className') {
+      } else if (key === 'className' && typeof value === 'string') {
         // 添加class
-        _dom.default.addClass(domElm, value);
+        var classList = value.split(" ");
+
+        _dom.default.addClass(domElm, classList);
       } else {
         // 属性设置
         _dom.default.setAttr(domElm, key, value);
@@ -1173,10 +1189,10 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
 
   var _super = _createSuper(Footer);
 
-  function Footer() {
+  function Footer(props) {
     _classCallCheck(this, Footer);
 
-    return _super.call(this);
+    return _super.call(this, props);
   }
 
   _createClass(Footer, [{
@@ -1218,6 +1234,24 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
               },
               children: ["powered by SmpReact"]
             })]
+          })]
+        }), _SmpReact.default.createElement({
+          elementName: "div",
+          attributes: {
+            className: "buttons"
+          },
+          children: [_SmpReact.default.createElement({
+            elementName: "div",
+            attributes: {
+              className: this.props.page === 0 ? 'title active' : 'title'
+            },
+            children: ["Counter"]
+          }), _SmpReact.default.createElement({
+            elementName: "div",
+            attributes: {
+              className: this.props.page === 1 ? 'title active' : 'title'
+            },
+            children: ["TodoList"]
           })]
         })]
       });
@@ -1705,7 +1739,9 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
         },
         children: [_SmpReact.default.createElement({
           elementName: _Header.default,
-          attributes: {},
+          attributes: {
+            page: this.state.page
+          },
           children: null
         }), _SmpReact.default.createElement({
           elementName: "main",
@@ -1713,6 +1749,7 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
           children: [_SmpReact.default.createElement({
             elementName: _Counter.default,
             attributes: {
+              className: this.state.page === 1 ? 'none' : '',
               setN: function setN(n) {
                 _this2.setN(n);
               },
@@ -1722,7 +1759,7 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
           }), _SmpReact.default.createElement({
             elementName: _TodoList.default,
             attributes: {
-              className: "",
+              className: this.state.page === 0 ? 'none' : '',
               list: this.state.list
             },
             children: null

@@ -68,9 +68,16 @@ const dom = {
   },
 
   //绑定class
-  addClass(domElm, className) {
-    domElm.classList.add(className);
-  },
+  addClass(domElm, classList) {
+    if (typeof classList === 'string')
+      domElm.classList.add(classList);
+    else if (Array.isArray(classList)) {
+      for (let cls of classList) {
+        domElm.classList.add(cls);
+      }
+    }
+  }
+  ,
 
   //绑定事件
   bindEvent(domElm, type, fn) {

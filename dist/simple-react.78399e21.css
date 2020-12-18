@@ -40,7 +40,7 @@ main {
 .wrapper {
     background: rgb(36, 41, 46);
     padding: 10px 120px;
-    color: #fff;
+    color: #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -51,12 +51,21 @@ main {
     align-items: center;
 }
 
+.buttons {
+    display: flex;
+    align-items: center;
+}
+
+.active {
+    border-bottom: 1px solid #eee;
+}
+
 .logo {
     width: 40px;
     height: 40px;
 }
 
-.textWrapper{
+.textWrapper {
     display: flex;
     justify-content: center;
     align-items: baseline;
@@ -69,7 +78,7 @@ main {
     margin-left: 20px;
 }
 
-.tips{
+.tips {
     color: #eee;
     font-size: 14px;
     margin-right: 12px;
