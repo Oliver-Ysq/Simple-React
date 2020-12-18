@@ -1,5 +1,6 @@
 import dom from "../utils/dom";
 import {createDomElement, renderComponent, setDomProps} from "./render";
+import {triggerHook} from "../main_methods/lifeCycle";
 
 //新旧节点相同：diff算法
 export function diff(oldVNode, newVNode) {
@@ -50,6 +51,8 @@ function diffVNode(oldVNode, newVNode) {
 
   if (oldVNode === newVNode || !domElm) return;
 
+  triggerHook(newVNode, 'willupdate');
+
   // 节点相同，dom类型一定相同
   newVNode.domElm = domElm;
 
@@ -74,13 +77,10 @@ function diffVNode(oldVNode, newVNode) {
       // 新子级不包含元素，而旧节点包含子级：则需要删除旧子级
       removeVNodes(domElm, oldChild, 0, oldChild.length - 1);
     }
-    // else if (oldText !== undefined) {
-    // 当新旧均无子级
-    // 这里有可能存在 <Text> 标签，且新内容为空
-    // 因此直接清空旧元素文字
-    // dom.setTextContent(domElm, '');
-    // }
   }
+
+  triggerHook(newVNode, 'update');
+
 }
 
 //新旧节点不同：直接替换
@@ -94,6 +94,7 @@ function replaceVNode(oldVNode, newVNode) {
   //创建新dom
   const newDomElm = createDomElement(newVNode);
   dom.appendChild(parentDom, newDomElm);
+  triggerHook(newDomElm.vnode, 'insert');
 
 }
 
@@ -106,7 +107,6 @@ function diffProps(domElm, oldProps, newProps) {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const oldV = oldProps[key], newV = newProps[key];
-
 
       if (key.startsWith("on")) {
         //处理事件
@@ -134,8 +134,15 @@ function diffProps(domElm, oldProps, newProps) {
 function addVNodes(domElm, before, children, start, end) {
   before = !before ? null : before.domElm;
   for (let i = start; i <= end; i++) {
-    let newDom = children[i].domElm || createDomElement(children[i]);
-    dom.insertAfter(domElm, newDom, before);
+    let newDom;
+    if (children[i].domElm) {
+      newDom = children[i].domElm;
+      dom.insertAfter(domElm, newDom, before);
+    } else {
+      newDom = createDomElement(children[i]);
+      dom.insertAfter(domElm, newDom, before);
+      triggerHook(children[i].vnode, 'insert');
+    }
     before = newDom;
   }
 }
@@ -143,6 +150,7 @@ function addVNodes(domElm, before, children, start, end) {
 //删除vnodes
 function removeVNodes(domElm, children, start, end) {
   for (let i = start; i <= end; i++) {
+    triggerHook(children[i], 'willremove');
     dom.removeChild(domElm, children[i].domElm);
   }
 }
@@ -228,7 +236,9 @@ function diffChildren(parentElm, oldChild, newChild) {
          * 4. 新 key 值在旧列表中不存在
          * 直接将该节点插入
         */
-        dom.insertBefore(parentElm, createDomElement(newStartVNode), oldStartVNode.domElm);
+        let newDom = createDomElement(newStartVNode);
+        dom.insertBefore(parentElm, newDom, oldStartVNode.domElm);
+        triggerHook(newDom.vnode, 'insert');
         newStartVNode = newChild[++newStartIdx];
       } else {
         /*
@@ -252,7 +262,9 @@ function diffChildren(parentElm, oldChild, newChild) {
            * 7. 新旧节点类型不一致
            * key 效，直接创建元素并插入
           */
-          dom.insertBefore(parentElm, createDomElement(newStartVNode), oldStartVNode.domElm);
+          let newDom = createDomElement(newStartVNode);
+          dom.insertBefore(parentElm, newDom, oldStartVNode.domElm);
+          triggerHook(newDom.vnode, 'insert');
         }
         newStartVNode = newChild[++newStartIdx];
       }

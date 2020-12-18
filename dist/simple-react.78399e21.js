@@ -283,6 +283,56 @@ var dom = {
 };
 var _default = dom;
 exports.default = _default;
+},{}],"src/SmpReact/main_methods/lifeCycle.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.triggerHook = triggerHook;
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+/*
+* hooks:
+*   create  //创建后
+*   insert  //挂载后
+*   willupdate  //更新前
+*   update  //更新后
+*   willremove  //卸载前
+* */
+function triggerHook(vnode, name) {
+  if (!Array.isArray(vnode)) {
+    var _hooks = vnode.hooks;
+    var hook;
+
+    if (_hooks) {
+      hook = _hooks[name];
+      hook && hook(vnode);
+    }
+  } else {
+    for (var i = 0; i <= vnode.length; i++) {
+      var _hooks2 = vnode[i].hooks;
+
+      var _hook = void 0;
+
+      if (_hooks2) {
+        _hook = _hooks2[name];
+        _hook && _hook.apply(void 0, _toConsumableArray(vnode[i]));
+      }
+    }
+  }
+}
 },{}],"src/SmpReact/dom_methods/render.js":[function(require,module,exports) {
 "use strict";
 
@@ -295,6 +345,8 @@ exports.renderComponent = renderComponent;
 exports.default = render;
 
 var _dom = _interopRequireDefault(require("../utils/dom"));
+
+var _lifeCycle = require("../main_methods/lifeCycle");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -316,6 +368,7 @@ function createDomElement(vnode) {
   } else {
     if (typeof vnode.type === 'function') {
       /**********    组件 ==> 组件实例 ==> 元素节点（elVNode）    ***********/
+      console.log(vnode);
       vnode = renderComponent(vnode);
     }
 
@@ -328,11 +381,16 @@ function createDomElement(vnode) {
     if (type && typeof type === 'string') {
       //type为字符串：dom元素
       vnode.domElm = _dom.default.createElement(vnode); //创建当前dom元素
+      // triggerHook(vnode, 'create');
 
       if (Array.isArray(children)) {
         //递归创建子元素
         for (var _i = 0; _i < children.length; _i++) {
-          _dom.default.appendChild(vnode.domElm, createDomElement(children[_i]));
+          var newDom = createDomElement(children[_i]);
+
+          _dom.default.appendChild(vnode.domElm, newDom);
+
+          (0, _lifeCycle.triggerHook)(newDom.vnode, 'insert');
         }
       }
     } else if ((type === undefined || type === null) && text) {
@@ -343,9 +401,11 @@ function createDomElement(vnode) {
     if (vnode.domElm) {
       //如果创建成功了，则设置dom元素的属性
       setDomProps(vnode.domElm, props);
-      return vnode.domElm;
+      vnode.domElm.vnode = vnode; //为dom元素记录下创造它的vnode
+
+      return vnode.domElm; //将创建的dom元素 和 insert周期 同时返回
     } else {
-      //创建失败，则renderComponent后的vnode依然是组件节点，需要递归rener
+      //创建失败，则renderComponent后的vnode依然是组件节点，需要递归render
       return createDomElement(vnode);
     }
   }
@@ -422,9 +482,10 @@ function render(vnode, parentDom) {
   _dom.default.appendChild(parentDom, domElm); //将dom元素插入父节点
 
 
+  (0, _lifeCycle.triggerHook)(domElm.vnode, 'insert');
   return domElm;
 }
-},{"../utils/dom":"src/SmpReact/utils/dom.js"}],"src/SmpReact/dom_methods/diff.js":[function(require,module,exports) {
+},{"../utils/dom":"src/SmpReact/utils/dom.js","../main_methods/lifeCycle":"src/SmpReact/main_methods/lifeCycle.js"}],"src/SmpReact/dom_methods/diff.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -435,6 +496,8 @@ exports.diff = diff;
 var _dom = _interopRequireDefault(require("../utils/dom"));
 
 var _render = require("./render");
+
+var _lifeCycle = require("../main_methods/lifeCycle");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -488,7 +551,8 @@ function diffVNode(oldVNode, newVNode) {
   var newChild = newVNode.children,
       newText = newVNode.text,
       newProps = newVNode.props;
-  if (oldVNode === newVNode || !domElm) return; // 节点相同，dom类型一定相同
+  if (oldVNode === newVNode || !domElm) return;
+  (0, _lifeCycle.triggerHook)(newVNode, 'willupdate'); // 节点相同，dom类型一定相同
 
   newVNode.domElm = domElm; //更新属性
 
@@ -510,14 +574,10 @@ function diffVNode(oldVNode, newVNode) {
     } else if (hasOldChild) {
       // 新子级不包含元素，而旧节点包含子级：则需要删除旧子级
       removeVNodes(domElm, oldChild, 0, oldChild.length - 1);
-    } // else if (oldText !== undefined) {
-    // 当新旧均无子级
-    // 这里有可能存在 <Text> 标签，且新内容为空
-    // 因此直接清空旧元素文字
-    // dom.setTextContent(domElm, '');
-    // }
-
+    }
   }
+
+  (0, _lifeCycle.triggerHook)(newVNode, 'update');
 } //新旧节点不同：直接替换
 
 
@@ -533,6 +593,8 @@ function replaceVNode(oldVNode, newVNode) {
   var newDomElm = (0, _render.createDomElement)(newVNode);
 
   _dom.default.appendChild(parentDom, newDomElm);
+
+  (0, _lifeCycle.triggerHook)(newDomElm.vnode, 'insert');
 }
 
 function diffProps(domElm, oldProps, newProps) {
@@ -574,9 +636,19 @@ function addVNodes(domElm, before, children, start, end) {
   before = !before ? null : before.domElm;
 
   for (var i = start; i <= end; i++) {
-    var newDom = children[i].domElm || (0, _render.createDomElement)(children[i]);
+    var newDom = void 0;
 
-    _dom.default.insertAfter(domElm, newDom, before);
+    if (children[i].domElm) {
+      newDom = children[i].domElm;
+
+      _dom.default.insertAfter(domElm, newDom, before);
+    } else {
+      newDom = (0, _render.createDomElement)(children[i]);
+
+      _dom.default.insertAfter(domElm, newDom, before);
+
+      (0, _lifeCycle.triggerHook)(children[i].vnode, 'insert');
+    }
 
     before = newDom;
   }
@@ -585,6 +657,8 @@ function addVNodes(domElm, before, children, start, end) {
 
 function removeVNodes(domElm, children, start, end) {
   for (var i = start; i <= end; i++) {
+    (0, _lifeCycle.triggerHook)(children[i], 'willremove');
+
     _dom.default.removeChild(domElm, children[i].domElm);
   }
 } //对比子级列表
@@ -659,8 +733,11 @@ function diffChildren(parentElm, oldChild, newChild) {
          * 4. 新 key 值在旧列表中不存在
          * 直接将该节点插入
         */
-        _dom.default.insertBefore(parentElm, (0, _render.createDomElement)(newStartVNode), oldStartVNode.domElm);
+        var newDom = (0, _render.createDomElement)(newStartVNode);
 
+        _dom.default.insertBefore(parentElm, newDom, oldStartVNode.domElm);
+
+        (0, _lifeCycle.triggerHook)(newDom.vnode, 'insert');
         newStartVNode = newChild[++newStartIdx];
       } else {
         /*
@@ -685,7 +762,11 @@ function diffChildren(parentElm, oldChild, newChild) {
            * 7. 新旧节点类型不一致
            * key 效，直接创建元素并插入
           */
-          _dom.default.insertBefore(parentElm, (0, _render.createDomElement)(newStartVNode), oldStartVNode.domElm);
+          var _newDom = (0, _render.createDomElement)(newStartVNode);
+
+          _dom.default.insertBefore(parentElm, _newDom, oldStartVNode.domElm);
+
+          (0, _lifeCycle.triggerHook)(_newDom.vnode, 'insert');
         }
 
         newStartVNode = newChild[++newStartIdx];
@@ -727,7 +808,7 @@ function createKeyList(children, start, end) {
 
   return map;
 }
-},{"../utils/dom":"src/SmpReact/utils/dom.js","./render":"src/SmpReact/dom_methods/render.js"}],"src/SmpReact/main_methods/update.js":[function(require,module,exports) {
+},{"../utils/dom":"src/SmpReact/utils/dom.js","./render":"src/SmpReact/dom_methods/render.js","../main_methods/lifeCycle":"src/SmpReact/main_methods/lifeCycle.js"}],"src/SmpReact/main_methods/update.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -812,23 +893,64 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var Component = /*#__PURE__*/function () {
-  // 通过保持三份不同的时期的快照
-  // 有利于对组件的状态及属性的管理和追踪
-  // 属性
-  // public __prevProps
-  // public props = {}
-  // public __nextProps
-  // 状态
-  // public __prevState
-  // public state = {}
-  // public __nextState
-  // 储存当前组件渲染出的VNode
-  // public __vnode
-  // 储存组件节点
-  // public __component
+  _createClass(Component, [{
+    key: "getSnapshotBeforeUpdate",
+    //生命周期函数
+    value: function getSnapshotBeforeUpdate(prevProps, prevState) {
+      return undefined;
+    } // 通过保持三份不同的时期的快照
+    // 有利于对组件的状态及属性的管理和追踪
+    // 属性
+    // public __prevProps
+    // public props = {}
+    // public __nextProps
+    // 状态
+    // public __prevState
+    // public state = {}
+    // public __nextState
+    // 储存当前组件渲染出的VNode
+    // public __vnode
+    // 储存组件节点
+    // public __component
+
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {}
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState, snapshot) {}
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {}
+  }]);
+
   function Component(props) {
+    var _this = this;
+
     _classCallCheck(this, Component);
 
+    this.__hooks = {
+      // 元素节点 创建时机
+      create: function create() {},
+      // 元素节点 插入时机，触发 didMount
+      insert: function insert() {
+        return _this.componentDidMount();
+      },
+      // 元素节点 更新之前，触发 getSnapshotBeforeUpdate
+      willupdate: function willupdate(vnode) {
+        _this.__snapshot = _this.getSnapshotBeforeUpdate(_this.__prevProps, _this.__prevState);
+      },
+      // 元素节点 更新之后， 触发 didUpdate
+      update: function update(oldVNode, vnode) {
+        _this.componentDidUpdate(_this.__prevProps, _this.__prevState, _this.__snapshot);
+
+        _this.__snapshot = undefined;
+      },
+      // 元素节点 卸载之前， 触发 willUnmount
+      willremove: function willremove(vnode) {
+        return _this.componentWillUnmount();
+      }
+    };
     this.props = props;
     this.__setStateCallbacks = [];
   }
@@ -851,7 +973,9 @@ var Component = /*#__PURE__*/function () {
       this.__nextState = undefined;
       this.__nextProps = undefined; // 重新执行 render 生成 VNode
 
-      this.__vnode = this.render();
+      this.__vnode = this.render(); //绑定生命周期
+
+      this.__vnode.hooks = this.__hooks;
       return this.__vnode;
     } //更新state
 
@@ -1236,15 +1360,87 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
   var _super = _createSuper(Counter);
 
   function Counter(props) {
+    var _this;
+
     _classCallCheck(this, Counter);
 
-    return _super.call(this, props);
+    _this = _super.call(this, props);
+    _this.state = {
+      interval: null,
+      canIclick: true,
+      disabled: false
+    };
+
+    _this.calc = function (type) {
+      if (!_this.state.canIclick) return;
+
+      switch (type) {
+        case 0:
+          _this.props.setN(_this.props.n + 1);
+
+          break;
+
+        case 1:
+          _this.props.setN(_this.props.n - 1);
+
+          break;
+
+        case 2:
+          _this.props.setN(_this.props.n * 2);
+
+          break;
+
+        case 3:
+          _this.props.setN(0);
+
+          break;
+
+        default:
+          throw new Error();
+      }
+    };
+
+    _this.setInterval = function () {
+      if (!_this.state.canIclick) return false;
+
+      var that = _assertThisInitialized(_this);
+
+      _this.setState({
+        disabled: true,
+        interval: setInterval(function () {
+          that.setState({
+            n: that.state.n + 1
+          });
+        }, 1000),
+        flag: false
+      });
+    };
+
+    _this.clearInterval = function () {
+      if (_this.state.canIclick === false) {
+        clearInterval(_this.state.interval);
+        window.alert("定时器已关闭");
+      }
+
+      _this.setState({
+        flag: true,
+        interval: null,
+        disabled: false
+      });
+    };
+
+    return _this;
   }
 
   _createClass(Counter, [{
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState, snapshot) {
+      console.log('Counter update');
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this = this;
+      var _this2 = this;
 
       return _SmpReact.default.createElement({
         elementName: "div",
@@ -1268,36 +1464,36 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
+                className: this.state.disabled && 'ban',
                 onClick: function onClick() {
-                  return _this.props.add();
+                  return _this2.calc(0);
                 }
               },
               children: ["+1"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
+                className: this.state.disabled && 'ban',
                 onClick: function onClick() {
-                  return _this.props.minus();
+                  return _this2.calc(1);
                 }
               },
               children: ["-1"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
+                className: this.state.disabled && 'ban',
                 onClick: function onClick() {
-                  return _this.props.mult();
+                  return _this2.calc(2);
                 }
               },
               children: ["\xD72"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
+                className: this.state.disabled && 'ban',
                 onClick: function onClick() {
-                  return _this.props.clear();
+                  return _this2.calc(3);
                 }
               },
               children: ["clear"]
@@ -1311,7 +1507,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
               elementName: "button",
               attributes: {
                 onClick: function onClick() {
-                  return _this.props.setInterval();
+                  return _this2.setInterval();
                 }
               },
               children: ["setInterval"]
@@ -1319,7 +1515,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
               elementName: "button",
               attributes: {
                 onClick: function onClick() {
-                  return _this.props.clearInterval();
+                  return _this2.clearInterval();
                 }
               },
               children: ["clearInterval"]
@@ -1334,7 +1530,76 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = Counter;
-},{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./style.css":"src/components/Counter/style.css"}],"App.jsx":[function(require,module,exports) {
+},{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./style.css":"src/components/Counter/style.css"}],"src/components/TodoList/style.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/components/TodoList/TodoList.jsx":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _SmpReact = _interopRequireDefault(require("../../SmpReact/SmpReact"));
+
+require("./style.css");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
+  _inherits(TodoList, _SmpReact$Component);
+
+  var _super = _createSuper(TodoList);
+
+  function TodoList(props) {
+    _classCallCheck(this, TodoList);
+
+    return _super.call(this, props);
+  }
+
+  _createClass(TodoList, [{
+    key: "render",
+    value: function render() {
+      return _SmpReact.default.createElement({
+        elementName: "div",
+        attributes: {
+          className: "listWrapper"
+        },
+        children: ["todo"]
+      });
+    }
+  }]);
+
+  return TodoList;
+}(_SmpReact.default.Component);
+
+exports.default = TodoList;
+},{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./style.css":"src/components/TodoList/style.css"}],"App.jsx":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1351,6 +1616,8 @@ var _Header = _interopRequireDefault(require("./src/components/Header/Header"));
 var _Footer = _interopRequireDefault(require("./src/components/Footer/Footer"));
 
 var _Counter = _interopRequireDefault(require("./src/components/Counter/Counter"));
+
+var _TodoList = _interopRequireDefault(require("./src/components/TodoList/TodoList"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1389,72 +1656,25 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
     _this = _super.call(this);
     _this.state = {
       n: 0,
-      interval: null,
-      flag: true,
-      disabled: false
+      list: [{
+        content: "汽车",
+        done: false
+      }, {
+        content: "写作业",
+        done: false
+      }],
+      page: 0
     };
 
-    _this.calc = function (type) {
-      switch (type) {
-        case 0:
-          _this.setState({
-            n: _this.state.n + 1
-          });
-
-          break;
-
-        case 1:
-          _this.setState({
-            n: _this.state.n - 1
-          });
-
-          break;
-
-        case 2:
-          _this.setState({
-            n: 2 * _this.state.n
-          });
-
-          break;
-
-        case 3:
-          _this.setState({
-            n: 0
-          });
-
-          break;
-
-        default:
-          throw new Error();
-      }
-    };
-
-    _this.setInterval = function () {
-      if (!_this.state.flag) return false;
-
-      var that = _assertThisInitialized(_this);
-
+    _this.setN = function (newN) {
       _this.setState({
-        disabled: true,
-        interval: setInterval(function () {
-          that.setState({
-            n: that.state.n + 1
-          });
-        }, 1000),
-        flag: false
+        n: newN
       });
     };
 
-    _this.clearInterval = function () {
-      if (_this.state.flag === false) {
-        clearInterval(_this.state.interval);
-        window.alert("定时器已关闭");
-      }
-
+    _this.setPage = function () {
       _this.setState({
-        flag: true,
-        interval: null,
-        disabled: false
+        page: (_this.state.page + 1) % 2
       });
     };
 
@@ -1462,6 +1682,11 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
   }
 
   _createClass(App, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      console.log('App mount');
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
@@ -1481,27 +1706,17 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
           children: [_SmpReact.default.createElement({
             elementName: _Counter.default,
             attributes: {
-              disabled: this.state.disabled,
-              n: this.state.n,
-              interval: this.state.interval,
-              add: function add() {
-                return _this2.calc(0);
+              setN: function setN(n) {
+                _this2.setN(n);
               },
-              minus: function minus() {
-                return _this2.calc(1);
-              },
-              mult: function mult() {
-                return _this2.calc(2);
-              },
-              clear: function clear() {
-                return _this2.calc(3);
-              },
-              setInterval: function setInterval() {
-                return _this2.setInterval();
-              },
-              clearInterval: function clearInterval() {
-                return _this2.clearInterval();
-              }
+              n: this.state.n
+            },
+            children: null
+          }), _SmpReact.default.createElement({
+            elementName: _TodoList.default,
+            attributes: {
+              className: "none",
+              list: this.state.list
             },
             children: null
           })]
@@ -1518,7 +1733,7 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = App;
-},{"./src/SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./App.css":"App.css","./src/components/Header/Header":"src/components/Header/Header.jsx","./src/components/Footer/Footer":"src/components/Footer/Footer.jsx","./src/components/Counter/Counter":"src/components/Counter/Counter.jsx"}],"index.jsx":[function(require,module,exports) {
+},{"./src/SmpReact/SmpReact":"src/SmpReact/SmpReact.js","./App.css":"App.css","./src/components/Header/Header":"src/components/Header/Header.jsx","./src/components/Footer/Footer":"src/components/Footer/Footer.jsx","./src/components/Counter/Counter":"src/components/Counter/Counter.jsx","./src/components/TodoList/TodoList":"src/components/TodoList/TodoList.jsx"}],"index.jsx":[function(require,module,exports) {
 "use strict";
 
 var _SmpReact = _interopRequireDefault(require("./src/SmpReact/SmpReact"));
@@ -1562,7 +1777,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "4419" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3429" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

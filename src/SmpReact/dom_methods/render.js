@@ -1,4 +1,5 @@
 import dom from "../utils/dom";
+import {triggerHook} from "../main_methods/lifeCycle";
 
 // 创建dom元素：虚拟dom => dom
 export function createDomElement(vnode) {
@@ -16,16 +17,22 @@ export function createDomElement(vnode) {
   } else {
     if (typeof vnode.type === 'function') {
       /**********    组件 ==> 组件实例 ==> 元素节点（elVNode）    ***********/
+      console.log(vnode)
       vnode = renderComponent(vnode);
+
     }
     const {children, type, text, props} = vnode;
     if (type && typeof type === 'string') {
       //type为字符串：dom元素
       vnode.domElm = dom.createElement(vnode);//创建当前dom元素
+      // triggerHook(vnode, 'create');
       if (Array.isArray(children)) {
         //递归创建子元素
-        for (let i = 0; i < children.length; i++)
-          dom.appendChild(vnode.domElm, createDomElement(children[i]));
+        for (let i = 0; i < children.length; i++) {
+          let newDom = createDomElement(children[i]);
+          dom.appendChild(vnode.domElm, newDom);
+          triggerHook(newDom.vnode, 'insert');
+        }
 
       }
     } else if ((type === undefined || type === null) && text) {
@@ -35,8 +42,11 @@ export function createDomElement(vnode) {
 
     if (vnode.domElm) {//如果创建成功了，则设置dom元素的属性
       setDomProps(vnode.domElm, props);
-      return vnode.domElm;
-    } else {  //创建失败，则renderComponent后的vnode依然是组件节点，需要递归rener
+
+      vnode.domElm.vnode = vnode; //为dom元素记录下创造它的vnode
+
+      return vnode.domElm;  //将创建的dom元素 和 insert周期 同时返回
+    } else {  //创建失败，则renderComponent后的vnode依然是组件节点，需要递归render
       return createDomElement(vnode);
     }
   }
@@ -104,5 +114,6 @@ export function renderComponent(compVNode) {
 export default function render(vnode, parentDom) {
   const domElm = createDomElement(vnode); //创建dom元素（可能是dom元素列表）
   dom.appendChild(parentDom, domElm);  //将dom元素插入父节点
+  triggerHook(domElm.vnode, 'insert');
   return domElm;
 }

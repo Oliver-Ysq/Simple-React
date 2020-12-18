@@ -22,6 +22,38 @@ export default class Component {
   // 储存组件节点
   // public __component
 
+  __hooks = {
+
+    // 元素节点 创建时机
+    create: () => {},
+
+    // 元素节点 插入时机，触发 didMount
+    insert: () => this.componentDidMount(),
+
+    // 元素节点 更新之前，触发 getSnapshotBeforeUpdate
+    willupdate: (vnode) => {
+      this.__snapshot = this.getSnapshotBeforeUpdate(this.__prevProps, this.__prevState);
+    },
+
+    // 元素节点 更新之后， 触发 didUpdate
+    update: (oldVNode, vnode) => {
+      this.componentDidUpdate(this.__prevProps, this.__prevState, this.__snapshot);
+      this.__snapshot = undefined;
+    },
+
+    // 元素节点 卸载之前， 触发 willUnmount
+    willremove: (vnode) => this.componentWillUnmount(),
+  };
+
+  //生命周期函数
+  getSnapshotBeforeUpdate(prevProps, prevState) { return undefined; }
+
+  componentDidMount() {}
+
+  componentDidUpdate(prevProps, prevState, snapshot) { }
+
+  componentWillUnmount() { }
+
   constructor(props) {
     this.props = props;
     this.__setStateCallbacks = [];
@@ -47,6 +79,10 @@ export default class Component {
 
     // 重新执行 render 生成 VNode
     this.__vnode = this.render();
+
+    //绑定生命周期
+    this.__vnode.hooks = this.__hooks;
+
     return this.__vnode;
   }
 
