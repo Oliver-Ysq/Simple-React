@@ -89,11 +89,10 @@ export default class Component {
   //更新state
   setState(operater, callback) {
     // 合并状态, 暂存于即将更新态中
-    if (typeof operater === 'function') {
-      operater = operater(this.state, this.props);
-    }
+    if (typeof operater === 'function') operater = operater(this.state, this.props);
 
     //setState帮你合并
+
     this.__nextState = {
       ...this.state,
       ...operater,
@@ -101,11 +100,15 @@ export default class Component {
 
     // 调用更新，并执行回调
     callback && this.__setStateCallbacks.push(callback);
-    enqueueRender(this);
+
+    //值有改变才render
+    if (!deepEqual(this.state, this.__nextState))
+      enqueueRender(this);
   }
 
   //更新状态，调用diff
   __update() {
+
     // 临时存储 旧虚拟节点 (oldVNode)
     const oldVNode = this.__vnode;
 
@@ -120,4 +123,29 @@ export default class Component {
 
     this.__dirty = false;
   };
+}
+
+function deepEqual(object1, object2) {
+  const keys1 = Object.keys(object1);
+  const keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (let index = 0; index < keys1.length; index++) {
+    const val1 = object1[keys1[index]];
+    const val2 = object2[keys2[index]];
+    const areObjects = isObject(val1) && isObject(val2);
+    if (areObjects && !deepEqual(val1, val2) ||
+      !areObjects && val1 !== val2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function isObject(object) {
+  return object != null && typeof object === 'object';
 }

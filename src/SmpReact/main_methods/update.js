@@ -26,6 +26,7 @@ function flushRenderQueue() {
     updateQueue.sort();
 
     // 循环队列出栈
+
     let curUpdater = updateQueue.pop();
     while (curUpdater) {
 
@@ -35,11 +36,9 @@ function flushRenderQueue() {
       if (curUpdater.__dirty) {
         // 调用组件自身的更新函数
         curUpdater.__update();
-
         // 执行 callback
         flushCallback(curUpdater);
       }
-      // curUpdater.__dirty = false;
       curUpdater = updateQueue.pop();
     }
   }

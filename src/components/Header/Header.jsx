@@ -2,7 +2,7 @@ import SmpReact from "../../SmpReact/SmpReact";
 import imgsrc from "../../assets/gamepad.png";
 import "./style.css";
 
-export default class Footer extends SmpReact.Component {
+export default class Header extends SmpReact.Component {
   constructor(props) {
     super(props);
   }
@@ -18,8 +18,12 @@ export default class Footer extends SmpReact.Component {
           </div>
         </div>
         <div className="buttons">
-          <div className={this.props.page === 0 ? 'title active' : 'title'}>Counter</div>
-          <div className={this.props.page === 1 ? 'title active' : 'title'}>TodoList</div>
+          <div className={this.props.page === 0 ? 'title active' : 'title'}
+               onClick={() => this.props.setPage(0)}>Counter
+          </div>
+          <div className={this.props.page === 1 ? 'title active' : 'title'}
+               onClick={() => this.props.setPage(1)}>TodoList
+          </div>
         </div>
       </header>
     );

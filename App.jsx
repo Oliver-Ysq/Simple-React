@@ -17,8 +17,9 @@ export default class App extends SmpReact.Component {
     this.setN = (newN) => {
       this.setState({n: newN});
     };
-    this.setPage = () => {
-      this.setState({page: (this.state.page + 1) % 2});
+
+    this.setPage = (newPage) => {
+      this.setState({page: newPage});
     };
 
   };
@@ -30,7 +31,7 @@ export default class App extends SmpReact.Component {
   render() {
     return (
       <div className="page">
-        <Header page={this.state.page}/>
+        <Header setPage={(n) => this.setPage(n)} page={this.state.page}/>
         <main>
           <Counter className={this.state.page === 1 ? 'none' : ''} setN={(n) => {this.setN(n);}} n={this.state.n}/>
           <TodoList className={this.state.page === 0 ? 'none' : ''} list={this.state.list}/>

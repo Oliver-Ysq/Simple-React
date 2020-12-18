@@ -110,8 +110,13 @@ function diffProps(domElm, oldProps, newProps) {
 
       if (key.startsWith("on")) {
         //处理事件
-        if (typeof oldV === 'function' && oldV !== newV) {
+        if (typeof oldV === 'function' && oldV !== newV ) {
+
           //当存在旧事件，且新旧值不一致时：事件解绑
+          //由于检测逻辑是对比函数地址，所以不支持行内使用：
+          //      onClick={()=>{...}} 或 onClick={this.fn.bind(this)}
+          //因为以上写法会生成新的函数导致无法对比
+
           const eventName = key.substring(2).toLowerCase();
           dom.removeEvent(domElm, eventName, oldV);
         }
@@ -119,7 +124,6 @@ function diffProps(domElm, oldProps, newProps) {
         //普通属性处理
         if (newV === undefined || (key === 'className' && (newV === false || newV === null))) {
           // 若oldVNode中的属性在newVNode中不存在，则直接删除
-          // class属性需要特殊处理
           dom.removeAttr(domElm, key === 'className' ? 'class' : key);
         }
       }

@@ -629,6 +629,9 @@ function diffProps(domElm, oldProps, newProps) {
         //处理事件
         if (typeof oldV === 'function' && oldV !== newV) {
           //当存在旧事件，且新旧值不一致时：事件解绑
+          //由于检测逻辑是对比函数地址，所以不支持行内使用：
+          //      onClick={()=>{...}} 或 onClick={this.fn.bind(this)}
+          //因为以上写法会生成新的函数导致无法对比
           var eventName = key.substring(2).toLowerCase();
 
           _dom.default.removeEvent(domElm, eventName, oldV);
@@ -637,7 +640,6 @@ function diffProps(domElm, oldProps, newProps) {
         //普通属性处理
         if (newV === undefined || key === 'className' && (newV === false || newV === null)) {
           // 若oldVNode中的属性在newVNode中不存在，则直接删除
-          // class属性需要特殊处理
           _dom.default.removeAttr(domElm, key === 'className' ? 'class' : key);
         }
       }
@@ -870,8 +872,7 @@ function flushRenderQueue() {
 
 
         flushCallback(curUpdater);
-      } // curUpdater.__dirty = false;
-
+      }
 
       curUpdater = updateQueue.pop();
     }
@@ -902,6 +903,8 @@ var _diff = require("../dom_methods/diff");
 var _update = require("./update");
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1000,15 +1003,13 @@ var Component = /*#__PURE__*/function () {
     key: "setState",
     value: function setState(operater, callback) {
       // 合并状态, 暂存于即将更新态中
-      if (typeof operater === 'function') {
-        operater = operater(this.state, this.props);
-      } //setState帮你合并
-
+      if (typeof operater === 'function') operater = operater(this.state, this.props); //setState帮你合并
 
       this.__nextState = _extends({}, this.state, operater); // 调用更新，并执行回调
 
-      callback && this.__setStateCallbacks.push(callback);
-      (0, _update.enqueueRender)(this);
+      callback && this.__setStateCallbacks.push(callback); //值有改变才render
+
+      if (!deepEqual(this.state, this.__nextState)) (0, _update.enqueueRender)(this);
     } //更新状态，调用diff
 
   }, {
@@ -1030,6 +1031,31 @@ var Component = /*#__PURE__*/function () {
 }();
 
 exports.default = Component;
+
+function deepEqual(object1, object2) {
+  var keys1 = Object.keys(object1);
+  var keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (var index = 0; index < keys1.length; index++) {
+    var val1 = object1[keys1[index]];
+    var val2 = object2[keys2[index]];
+    var areObjects = isObject(val1) && isObject(val2);
+
+    if (areObjects && !deepEqual(val1, val2) || !areObjects && val1 !== val2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function isObject(object) {
+  return object != null && _typeof(object) === 'object';
+}
 },{"../dom_methods/diff":"src/SmpReact/dom_methods/diff.js","./update":"src/SmpReact/main_methods/update.js"}],"src/SmpReact/SmpReact.js":[function(require,module,exports) {
 "use strict";
 
@@ -1184,20 +1210,22 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var Footer = /*#__PURE__*/function (_SmpReact$Component) {
-  _inherits(Footer, _SmpReact$Component);
+var Header = /*#__PURE__*/function (_SmpReact$Component) {
+  _inherits(Header, _SmpReact$Component);
 
-  var _super = _createSuper(Footer);
+  var _super = _createSuper(Header);
 
-  function Footer(props) {
-    _classCallCheck(this, Footer);
+  function Header(props) {
+    _classCallCheck(this, Header);
 
     return _super.call(this, props);
   }
 
-  _createClass(Footer, [{
+  _createClass(Header, [{
     key: "render",
     value: function render() {
+      var _this = this;
+
       return _SmpReact.default.createElement({
         elementName: "header",
         attributes: {
@@ -1243,13 +1271,19 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
           children: [_SmpReact.default.createElement({
             elementName: "div",
             attributes: {
-              className: this.props.page === 0 ? 'title active' : 'title'
+              className: this.props.page === 0 ? 'title active' : 'title',
+              onClick: function onClick() {
+                return _this.props.setPage(0);
+              }
             },
             children: ["Counter"]
           }), _SmpReact.default.createElement({
             elementName: "div",
             attributes: {
-              className: this.props.page === 1 ? 'title active' : 'title'
+              className: this.props.page === 1 ? 'title active' : 'title',
+              onClick: function onClick() {
+                return _this.props.setPage(1);
+              }
             },
             children: ["TodoList"]
           })]
@@ -1258,10 +1292,10 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
     }
   }]);
 
-  return Footer;
+  return Header;
 }(_SmpReact.default.Component);
 
-exports.default = Footer;
+exports.default = Header;
 },{"../../SmpReact/SmpReact":"src/SmpReact/SmpReact.js","../../assets/gamepad.png":"src/assets/gamepad.png","./style.css":"src/components/Header/style.css"}],"src/components/Footer/style.css":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
@@ -1389,6 +1423,8 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+var interval;
+
 var Counter = /*#__PURE__*/function (_SmpReact$Component) {
   _inherits(Counter, _SmpReact$Component);
 
@@ -1401,73 +1437,89 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
 
     _this = _super.call(this, props);
     _this.state = {
-      interval: null,
       canIclick: true,
-      disabled: false
+      disabled: false,
+      x: 0
     };
+    _this.calc = _this.calc.bind(_assertThisInitialized(_this));
+    _this.setInterval = _this.setInterval.bind(_assertThisInitialized(_this));
+    _this.clearInterval = _this.clearInterval.bind(_assertThisInitialized(_this));
+    return _this;
+  }
 
-    _this.calc = function (type) {
-      if (!_this.state.canIclick) return;
+  _createClass(Counter, [{
+    key: "calc",
+    value: function calc(e) {
+      if (!this.state.canIclick) return;
 
-      switch (type) {
-        case 0:
-          _this.props.setN(_this.props.n + 1);
-
-          break;
-
+      switch (parseInt(e.target.id)) {
         case 1:
-          _this.props.setN(_this.props.n - 1);
-
+          this.props.setN(this.props.n + 1);
           break;
 
         case 2:
-          _this.props.setN(_this.props.n * 2);
-
+          this.props.setN(this.props.n - 1);
           break;
 
         case 3:
-          _this.props.setN(0);
+          this.props.setN(this.props.n * 2);
+          break;
 
+        case 4:
+          this.props.setN(0);
           break;
 
         default:
           throw new Error();
       }
-    };
-
-    _this.setInterval = function () {
-      if (!_this.state.canIclick) return false;
-
-      var that = _assertThisInitialized(_this);
-
-      _this.setState({
-        disabled: true,
-        interval: setInterval(function () {
-          that.setState({
-            n: that.state.n + 1
-          });
-        }, 1000),
-        flag: false
-      });
-    };
-
-    _this.clearInterval = function () {
-      if (_this.state.canIclick === false) {
-        clearInterval(_this.state.interval);
-        window.alert("定时器已关闭");
+    }
+  }, {
+    key: "clearInterval",
+    value: function (_clearInterval) {
+      function clearInterval() {
+        return _clearInterval.apply(this, arguments);
       }
 
-      _this.setState({
-        flag: true,
-        interval: null,
+      clearInterval.toString = function () {
+        return _clearInterval.toString();
+      };
+
+      return clearInterval;
+    }(function () {
+      if (!this.state.canIclick) {
+        clearInterval(interval);
+        console.log("定时器已关闭");
+      }
+
+      this.setState({
+        canIclick: true,
         disabled: false
       });
-    };
+    })
+  }, {
+    key: "setInterval",
+    value: function (_setInterval) {
+      function setInterval() {
+        return _setInterval.apply(this, arguments);
+      }
 
-    return _this;
-  }
+      setInterval.toString = function () {
+        return _setInterval.toString();
+      };
 
-  _createClass(Counter, [{
+      return setInterval;
+    }(function () {
+      if (!this.state.canIclick) return false;
+      var that = this;
+      interval = setInterval(function () {
+        that.props.setN(that.props.n + 1);
+      }, 1000);
+      this.setState({
+        disabled: true,
+        canIclick: false
+      });
+    })
+  }, {
     key: "componentDidUpdate",
     value: function componentDidUpdate(prevProps, prevState, snapshot) {
       console.log('Counter update');
@@ -1475,8 +1527,6 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
-
       return _SmpReact.default.createElement({
         elementName: "div",
         attributes: {
@@ -1500,36 +1550,32 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
               elementName: "button",
               attributes: {
                 className: this.state.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this2.calc(0);
-                }
+                id: 1,
+                onClick: this.calc
               },
               children: ["+1"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
                 className: this.state.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this2.calc(1);
-                }
+                id: 2,
+                onClick: this.calc
               },
               children: ["-1"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
                 className: this.state.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this2.calc(2);
-                }
+                id: 3,
+                onClick: this.calc
               },
               children: ["\xD72"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
                 className: this.state.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this2.calc(3);
-                }
+                id: 4,
+                onClick: this.calc
               },
               children: ["clear"]
             })]
@@ -1541,17 +1587,13 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                onClick: function onClick() {
-                  return _this2.setInterval();
-                }
+                onClick: this.setInterval
               },
               children: ["setInterval"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                onClick: function onClick() {
-                  return _this2.clearInterval();
-                }
+                onClick: this.clearInterval
               },
               children: ["clearInterval"]
             })]
@@ -1713,9 +1755,9 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
       });
     };
 
-    _this.setPage = function () {
+    _this.setPage = function (newPage) {
       _this.setState({
-        page: (_this.state.page + 1) % 2
+        page: newPage
       });
     };
 
@@ -1740,6 +1782,9 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
         children: [_SmpReact.default.createElement({
           elementName: _Header.default,
           attributes: {
+            setPage: function setPage(n) {
+              return _this2.setPage(n);
+            },
             page: this.state.page
           },
           children: null
