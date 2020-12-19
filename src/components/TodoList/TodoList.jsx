@@ -56,8 +56,8 @@ export default class TodoList extends SmpReact.Component {
                 {v.content}
               </div>
               <div className="card-btn">
-                <button className="finish-btn" id={v.id} onClick={this.handleFinish}>完成</button>
-                <button className="del-btn" id={v.id} onClick={this.handleDelete}>删除</button>
+                <button className="btn finish-btn" id={v.id} onClick={this.handleFinish}>完成</button>
+                <button className="btn del-btn" id={v.id} onClick={this.handleDelete}>删除</button>
               </div>
             </div>
           );

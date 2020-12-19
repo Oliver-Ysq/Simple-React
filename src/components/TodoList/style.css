@@ -36,7 +36,7 @@
     align-items: center;
 }
 
-button {
+.btn {
     /*border: 1px #DADADA solid;*/
     padding: 8px 10px;
     margin-left: 10px;
@@ -48,7 +48,7 @@ button {
     outline: none;
 }
 
-button:hover {
+.btn:hover {
     border: 1px #C6C6C6 solid;
     box-shadow: 1px 1px 1px #EAEAEA;
     color: #000;
@@ -56,7 +56,7 @@ button:hover {
     cursor: pointer;
 }
 
-button:active {box-shadow: inset 1px 1px 1px #DFDFDF;}
+.btn:active {box-shadow: inset 1px 1px 1px #DFDFDF;}
 
 .finish-btn { background: #333;color: #eee;}
 
@@ -80,6 +80,8 @@ button:active {box-shadow: inset 1px 1px 1px #DFDFDF;}
     background: orange;
     font-weight: bolder;
     font-size: 15px;
+
+    box-shadow: 0 0 12px 2px #aaa;
 }
 
 .newItem:hover {cursor: pointer;}

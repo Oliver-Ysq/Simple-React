@@ -65,7 +65,7 @@ export default class Counter extends SmpReact.Component {
   }
 
   componentWillUnmount() {
-    console.log('Counter unmount！')
+    console.log('Counter unmount！');
   }
 
   render() {
@@ -74,14 +74,14 @@ export default class Counter extends SmpReact.Component {
         <div className="display">{this.props.n}</div>
         <div className="btnWrapper">
           <div>
-            <button className={this.state.disabled ? 'ban' : ''} id={1} onClick={this.calc}>+1</button>
-            <button className={this.state.disabled ? 'ban' : ''} id={2} onClick={this.calc}>-1</button>
-            <button className={this.state.disabled ? 'ban' : ''} id={3} onClick={this.calc}>×2</button>
-            <button className={this.state.disabled ? 'ban' : ''} id={4} onClick={this.calc}>clear</button>
+            <button className={'button ' + (this.state.disabled ? 'ban' : '')} id={1} onClick={this.calc}>+1</button>
+            <button className={'button ' + (this.state.disabled ? 'ban' : '')} id={2} onClick={this.calc}>-1</button>
+            <button className={'button ' + (this.state.disabled ? 'ban' : '')} id={3} onClick={this.calc}>×2</button>
+            <button className={'button ' + (this.state.disabled ? 'ban' : '')} id={4} onClick={this.calc}>clear</button>
           </div>
           <div class="secondLine">
-            <button onClick={this.setInterval}>setInterval</button>
-            <button onClick={this.clearInterval}>clearInterval</button>
+            <button className="button" onClick={this.setInterval}>setInterval</button>
+            <button className="button" onClick={this.clearInterval}>clearInterval</button>
           </div>
         </div>
       </div>
