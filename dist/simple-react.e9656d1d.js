@@ -183,6 +183,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -192,7 +200,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*
-  原生dom操作
+* 原生dom操作
 * */
 var dom = {
   //根据vnode.type创建dom元素
@@ -252,7 +260,7 @@ var dom = {
       dom.appendChild(parent, newNode);
     }
   },
-  //在后边插入节点
+  //在dom后边插入新dom
   insertAfter: function insertAfter(parent, newNode, before) {
     if (parent.lastChild === before) {
       parent.appendChild(newNode);
@@ -260,9 +268,11 @@ var dom = {
       parent.insertBefore(newNode, before);
     }
   },
-  //绑定class
-  addClass: function addClass(domElm, className) {
-    domElm.classList.add(className);
+  //绑定一个或多个class
+  addClass: function addClass(domElm, classList) {
+    var _domElm$classList;
+
+    if (typeof classList === 'string') domElm.classList.add(classList);else if (Array.isArray(classList)) (_domElm$classList = domElm.classList).add.apply(_domElm$classList, _toConsumableArray(classList));
   },
   //绑定事件
   bindEvent: function bindEvent(domElm, type, fn) {
@@ -279,10 +289,66 @@ var dom = {
   //删除属性
   removeAttr: function removeAttr(domElm, key) {
     domElm.removeAttribute(key);
+  },
+  //删除一个或多个class
+  removeClass: function removeClass(domElm, className) {
+    var _domElm$classList2;
+
+    if (typeof className === 'string') domElm.class.remove(className);else if (Array.isArray(className)) (_domElm$classList2 = domElm.classList).remove.apply(_domElm$classList2, _toConsumableArray(className));
   }
 };
 var _default = dom;
 exports.default = _default;
+},{}],"GEjr":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.triggerHook = triggerHook;
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+/*
+* hooks:
+*   create  //创建后
+*   insert  //挂载后
+*   willupdate  //更新前
+*   update  //更新后
+*   willremove  //卸载前
+* */
+function triggerHook(vnode, name) {
+  if (!Array.isArray(vnode)) {
+    var _hooks = vnode.hooks;
+    var hook;
+
+    if (_hooks) {
+      hook = _hooks[name];
+      hook && hook(vnode);
+    }
+  } else {
+    for (var i = 0; i <= vnode.length; i++) {
+      var _hooks2 = vnode[i].hooks;
+
+      var _hook = void 0;
+
+      if (_hooks2) {
+        _hook = _hooks2[name];
+        _hook && _hook.apply(void 0, _toConsumableArray(vnode[i]));
+      }
+    }
+  }
+}
 },{}],"QABK":[function(require,module,exports) {
 "use strict";
 
@@ -295,6 +361,8 @@ exports.renderComponent = renderComponent;
 exports.default = render;
 
 var _dom = _interopRequireDefault(require("../utils/dom"));
+
+var _lifeCycle = require("../main_methods/lifeCycle");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -328,11 +396,16 @@ function createDomElement(vnode) {
     if (type && typeof type === 'string') {
       //type为字符串：dom元素
       vnode.domElm = _dom.default.createElement(vnode); //创建当前dom元素
+      // triggerHook(vnode, 'create');
 
       if (Array.isArray(children)) {
         //递归创建子元素
         for (var _i = 0; _i < children.length; _i++) {
-          _dom.default.appendChild(vnode.domElm, createDomElement(children[_i]));
+          var newDom = createDomElement(children[_i]);
+
+          _dom.default.appendChild(vnode.domElm, newDom);
+
+          (0, _lifeCycle.triggerHook)(Array.isArray(newDom) ? newDom[0].vnode : newDom.vnode, 'insert');
         }
       }
     } else if ((type === undefined || type === null) && text) {
@@ -343,9 +416,11 @@ function createDomElement(vnode) {
     if (vnode.domElm) {
       //如果创建成功了，则设置dom元素的属性
       setDomProps(vnode.domElm, props);
-      return vnode.domElm;
+      vnode.domElm.vnode = vnode; //为dom元素记录下创造它的vnode
+
+      return vnode.domElm; //将创建的dom元素 和 insert周期 同时返回
     } else {
-      //创建失败，则renderComponent后的vnode依然是组件节点，需要递归rener
+      //创建失败，则renderComponent后的vnode依然是组件节点，需要递归render
       return createDomElement(vnode);
     }
   }
@@ -369,9 +444,13 @@ function setDomProps(domElm, props) {
         } else {
           console.log('Invalid EventHandler');
         }
-      } else if (key === 'className') {
+      } else if (key === 'className' && typeof value === 'string') {
         // 添加class
-        _dom.default.addClass(domElm, value);
+        var classList = value.split(" ").filter(function (v) {
+          return v !== "";
+        });
+
+        _dom.default.addClass(domElm, classList);
       } else {
         // 属性设置
         _dom.default.setAttr(domElm, key, value);
@@ -401,8 +480,10 @@ function renderComponent(compVNode) {
   } // 调用 render 获取元素节点 VNode
 
 
-  var vnode = instance.__createVNode(); // 组件、元素、实例之间保持相互引用，有利于双向连接整棵虚拟树
+  var vnode = instance.__createVNode(); //class继承
 
+
+  if (props.className) vnode.props.className = props.className; // 组件、元素、实例之间保持相互引用，有利于双向连接整棵虚拟树
 
   instance.__component = compVNode; //组件
 
@@ -422,9 +503,10 @@ function render(vnode, parentDom) {
   _dom.default.appendChild(parentDom, domElm); //将dom元素插入父节点
 
 
+  (0, _lifeCycle.triggerHook)(domElm.vnode, 'insert');
   return domElm;
 }
-},{"../utils/dom":"FhTM"}],"Fq0C":[function(require,module,exports) {
+},{"../utils/dom":"FhTM","../main_methods/lifeCycle":"GEjr"}],"Fq0C":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -435,6 +517,8 @@ exports.diff = diff;
 var _dom = _interopRequireDefault(require("../utils/dom"));
 
 var _render = require("./render");
+
+var _lifeCycle = require("../main_methods/lifeCycle");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -488,7 +572,8 @@ function diffVNode(oldVNode, newVNode) {
   var newChild = newVNode.children,
       newText = newVNode.text,
       newProps = newVNode.props;
-  if (oldVNode === newVNode || !domElm) return; // 节点相同，dom类型一定相同
+  if (oldVNode === newVNode || !domElm) return;
+  (0, _lifeCycle.triggerHook)(newVNode, 'willupdate'); // 节点相同，dom类型一定相同
 
   newVNode.domElm = domElm; //更新属性
 
@@ -510,22 +595,20 @@ function diffVNode(oldVNode, newVNode) {
     } else if (hasOldChild) {
       // 新子级不包含元素，而旧节点包含子级：则需要删除旧子级
       removeVNodes(domElm, oldChild, 0, oldChild.length - 1);
-    } // else if (oldText !== undefined) {
-    // 当新旧均无子级
-    // 这里有可能存在 <Text> 标签，且新内容为空
-    // 因此直接清空旧元素文字
-    // dom.setTextContent(domElm, '');
-    // }
-
+    }
   }
+
+  (0, _lifeCycle.triggerHook)(newVNode, 'update');
 } //新旧节点不同：直接替换
 
 
 function replaceVNode(oldVNode, newVNode) {
   var oldDomElm = oldVNode.domElm;
 
-  var parentDom = _dom.default.getParentNode(oldDomElm); //删除旧dom
+  var parentDom = _dom.default.getParentNode(oldDomElm);
 
+  console.log(oldVNode, newVNode);
+  (0, _lifeCycle.triggerHook)(oldDomElm, 'willremove'); //删除旧dom
 
   _dom.default.removeChild(parentDom, oldDomElm); //创建新dom
 
@@ -533,6 +616,8 @@ function replaceVNode(oldVNode, newVNode) {
   var newDomElm = (0, _render.createDomElement)(newVNode);
 
   _dom.default.appendChild(parentDom, newDomElm);
+
+  (0, _lifeCycle.triggerHook)(newDomElm.vnode, 'insert');
 }
 
 function diffProps(domElm, oldProps, newProps) {
@@ -550,16 +635,30 @@ function diffProps(domElm, oldProps, newProps) {
         //处理事件
         if (typeof oldV === 'function' && oldV !== newV) {
           //当存在旧事件，且新旧值不一致时：事件解绑
+          //由于检测逻辑是对比函数地址，所以不支持行内使用：
+          //      onClick={()=>{...}} 或 onClick={this.fn.bind(this)}
+          //因为以上写法会生成新的函数导致无法对比
           var eventName = key.substring(2).toLowerCase();
 
           _dom.default.removeEvent(domElm, eventName, oldV);
         }
       } else {
         //普通属性处理
-        if (newV === undefined || key === 'className' && (newV === false || newV === null)) {
+        if (newV === undefined) {
           // 若oldVNode中的属性在newVNode中不存在，则直接删除
-          // class属性需要特殊处理
           _dom.default.removeAttr(domElm, key === 'className' ? 'class' : key);
+        } else if (key === 'className' && typeof newV === 'string') {
+          (function () {
+            var oldList = oldV.split(" ");
+            var newList = newV.split(" ");
+            var delList = oldList.filter(function (v) {
+              return !newList.includes(v);
+            }).filter(function (v) {
+              return v !== "";
+            });
+
+            _dom.default.removeClass(domElm, delList);
+          })();
         }
       }
     } // 设置新属性
@@ -574,9 +673,19 @@ function addVNodes(domElm, before, children, start, end) {
   before = !before ? null : before.domElm;
 
   for (var i = start; i <= end; i++) {
-    var newDom = children[i].domElm || (0, _render.createDomElement)(children[i]);
+    var newDom = void 0;
 
-    _dom.default.insertAfter(domElm, newDom, before);
+    if (children[i].domElm) {
+      newDom = children[i].domElm;
+
+      _dom.default.insertAfter(domElm, newDom, before);
+    } else {
+      newDom = (0, _render.createDomElement)(children[i]);
+
+      _dom.default.insertAfter(domElm, newDom, before);
+
+      (0, _lifeCycle.triggerHook)(newDom.vnode, 'insert');
+    }
 
     before = newDom;
   }
@@ -585,6 +694,8 @@ function addVNodes(domElm, before, children, start, end) {
 
 function removeVNodes(domElm, children, start, end) {
   for (var i = start; i <= end; i++) {
+    (0, _lifeCycle.triggerHook)(children[i], 'willremove');
+
     _dom.default.removeChild(domElm, children[i].domElm);
   }
 } //对比子级列表
@@ -659,8 +770,11 @@ function diffChildren(parentElm, oldChild, newChild) {
          * 4. 新 key 值在旧列表中不存在
          * 直接将该节点插入
         */
-        _dom.default.insertBefore(parentElm, (0, _render.createDomElement)(newStartVNode), oldStartVNode.domElm);
+        var newDom = (0, _render.createDomElement)(newStartVNode);
 
+        _dom.default.insertBefore(parentElm, newDom, oldStartVNode.domElm);
+
+        (0, _lifeCycle.triggerHook)(newDom.vnode, 'insert');
         newStartVNode = newChild[++newStartIdx];
       } else {
         /*
@@ -685,7 +799,11 @@ function diffChildren(parentElm, oldChild, newChild) {
            * 7. 新旧节点类型不一致
            * key 效，直接创建元素并插入
           */
-          _dom.default.insertBefore(parentElm, (0, _render.createDomElement)(newStartVNode), oldStartVNode.domElm);
+          var _newDom = (0, _render.createDomElement)(newStartVNode);
+
+          _dom.default.insertBefore(parentElm, _newDom, oldStartVNode.domElm);
+
+          (0, _lifeCycle.triggerHook)(_newDom.vnode, 'insert');
         }
 
         newStartVNode = newChild[++newStartIdx];
@@ -727,7 +845,7 @@ function createKeyList(children, start, end) {
 
   return map;
 }
-},{"../utils/dom":"FhTM","./render":"QABK"}],"gvwW":[function(require,module,exports) {
+},{"../utils/dom":"FhTM","./render":"QABK","../main_methods/lifeCycle":"GEjr"}],"gvwW":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -772,8 +890,7 @@ function flushRenderQueue() {
 
 
         flushCallback(curUpdater);
-      } // curUpdater.__dirty = false;
-
+      }
 
       curUpdater = updateQueue.pop();
     }
@@ -805,6 +922,8 @@ var _update = require("./update");
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -812,23 +931,64 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var Component = /*#__PURE__*/function () {
-  // 通过保持三份不同的时期的快照
-  // 有利于对组件的状态及属性的管理和追踪
-  // 属性
-  // public __prevProps
-  // public props = {}
-  // public __nextProps
-  // 状态
-  // public __prevState
-  // public state = {}
-  // public __nextState
-  // 储存当前组件渲染出的VNode
-  // public __vnode
-  // 储存组件节点
-  // public __component
+  _createClass(Component, [{
+    key: "getSnapshotBeforeUpdate",
+    //生命周期函数
+    value: function getSnapshotBeforeUpdate(prevProps, prevState) {
+      return undefined;
+    } // 通过保持三份不同的时期的快照
+    // 有利于对组件的状态及属性的管理和追踪
+    // 属性
+    // public __prevProps
+    // public props = {}
+    // public __nextProps
+    // 状态
+    // public __prevState
+    // public state = {}
+    // public __nextState
+    // 储存当前组件渲染出的VNode
+    // public __vnode
+    // 储存组件节点
+    // public __component
+
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {}
+  }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState, snapshot) {}
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {}
+  }]);
+
   function Component(props) {
+    var _this = this;
+
     _classCallCheck(this, Component);
 
+    this.__hooks = {
+      // 元素节点 创建时机
+      create: function create() {},
+      // 元素节点 插入时机，触发 didMount
+      insert: function insert() {
+        return _this.componentDidMount();
+      },
+      // 元素节点 更新之前，触发 getSnapshotBeforeUpdate
+      willupdate: function willupdate(vnode) {
+        _this.__snapshot = _this.getSnapshotBeforeUpdate(_this.__prevProps, _this.__prevState);
+      },
+      // 元素节点 更新之后， 触发 didUpdate
+      update: function update(oldVNode, vnode) {
+        _this.componentDidUpdate(_this.__prevProps, _this.__prevState, _this.__snapshot);
+
+        _this.__snapshot = undefined;
+      },
+      // 元素节点 卸载之前， 触发 willUnmount
+      willremove: function willremove(vnode) {
+        return _this.componentWillUnmount();
+      }
+    };
     this.props = props;
     this.__setStateCallbacks = [];
   }
@@ -851,7 +1011,9 @@ var Component = /*#__PURE__*/function () {
       this.__nextState = undefined;
       this.__nextProps = undefined; // 重新执行 render 生成 VNode
 
-      this.__vnode = this.render();
+      this.__vnode = this.render(); //绑定生命周期
+
+      this.__vnode.hooks = this.__hooks;
       return this.__vnode;
     } //更新state
 
@@ -859,10 +1021,7 @@ var Component = /*#__PURE__*/function () {
     key: "setState",
     value: function setState(operater, callback) {
       // 合并状态, 暂存于即将更新态中
-      if (typeof operater === 'function') {
-        operater = operater(this.state, this.props);
-      } //setState帮你合并
-
+      if (typeof operater === 'function') operater = operater(this.state, this.props); //setState帮你合并
 
       this.__nextState = _extends({}, this.state, operater); // 调用更新，并执行回调
 
@@ -889,6 +1048,31 @@ var Component = /*#__PURE__*/function () {
 }();
 
 exports.default = Component;
+
+function deepEqual(object1, object2) {
+  var keys1 = Object.keys(object1);
+  var keys2 = Object.keys(object2);
+
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+
+  for (var index = 0; index < keys1.length; index++) {
+    var val1 = object1[keys1[index]];
+    var val2 = object2[keys2[index]];
+    var areObjects = isObject(val1) && isObject(val2);
+
+    if (areObjects && !deepEqual(val1, val2) || !areObjects && val1 !== val2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function isObject(object) {
+  return object != null && _typeof(object) === 'object';
+}
 },{"../dom_methods/diff":"Fq0C","./update":"gvwW"}],"opxX":[function(require,module,exports) {
 "use strict";
 
@@ -968,20 +1152,22 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-var Footer = /*#__PURE__*/function (_SmpReact$Component) {
-  _inherits(Footer, _SmpReact$Component);
+var Header = /*#__PURE__*/function (_SmpReact$Component) {
+  _inherits(Header, _SmpReact$Component);
 
-  var _super = _createSuper(Footer);
+  var _super = _createSuper(Header);
 
-  function Footer() {
-    _classCallCheck(this, Footer);
+  function Header(props) {
+    _classCallCheck(this, Header);
 
-    return _super.call(this);
+    return _super.call(this, props);
   }
 
-  _createClass(Footer, [{
+  _createClass(Header, [{
     key: "render",
     value: function render() {
+      var _this = this;
+
       return _SmpReact.default.createElement({
         elementName: "header",
         attributes: {
@@ -1019,15 +1205,39 @@ var Footer = /*#__PURE__*/function (_SmpReact$Component) {
               children: ["powered by SmpReact"]
             })]
           })]
+        }), _SmpReact.default.createElement({
+          elementName: "div",
+          attributes: {
+            className: "buttons"
+          },
+          children: [_SmpReact.default.createElement({
+            elementName: "div",
+            attributes: {
+              className: (this.props.page === 0 ? 'active' : '') + ' title pointer',
+              onClick: function onClick() {
+                return _this.props.setPage(0);
+              }
+            },
+            children: ["Counter"]
+          }), _SmpReact.default.createElement({
+            elementName: "div",
+            attributes: {
+              className: (this.props.page === 1 ? 'active' : '') + ' title pointer',
+              onClick: function onClick() {
+                return _this.props.setPage(1);
+              }
+            },
+            children: ["TodoList"]
+          })]
         })]
       });
     }
   }]);
 
-  return Footer;
+  return Header;
 }(_SmpReact.default.Component);
 
-exports.default = Footer;
+exports.default = Header;
 },{"../../SmpReact/SmpReact":"opxX","../../assets/gamepad.png":"H8l0","./style.css":"EQHX"}],"vyL3":[function(require,module,exports) {
 "use strict";
 
@@ -1145,22 +1355,115 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+var interval;
+
 var Counter = /*#__PURE__*/function (_SmpReact$Component) {
   _inherits(Counter, _SmpReact$Component);
 
   var _super = _createSuper(Counter);
 
   function Counter(props) {
+    var _this;
+
     _classCallCheck(this, Counter);
 
-    return _super.call(this, props);
+    _this = _super.call(this, props);
+    _this.state = {
+      canIclick: true,
+      disabled: false,
+      x: 0
+    };
+    _this.calc = _this.calc.bind(_assertThisInitialized(_this));
+    _this.setInterval = _this.setInterval.bind(_assertThisInitialized(_this));
+    _this.clearInterval = _this.clearInterval.bind(_assertThisInitialized(_this));
+    return _this;
   }
 
   _createClass(Counter, [{
+    key: "calc",
+    value: function calc(e) {
+      if (!this.state.canIclick) return;
+
+      switch (parseInt(e.target.id)) {
+        case 1:
+          this.props.setN(this.props.n + 1);
+          break;
+
+        case 2:
+          this.props.setN(this.props.n - 1);
+          break;
+
+        case 3:
+          this.props.setN(this.props.n * 2);
+          break;
+
+        case 4:
+          this.props.setN(0);
+          break;
+
+        default:
+          throw new Error();
+      }
+    }
+  }, {
+    key: "clearInterval",
+    value: function (_clearInterval) {
+      function clearInterval() {
+        return _clearInterval.apply(this, arguments);
+      }
+
+      clearInterval.toString = function () {
+        return _clearInterval.toString();
+      };
+
+      return clearInterval;
+    }(function () {
+      if (!this.state.canIclick) {
+        clearInterval(interval);
+        console.log("定时器已关闭");
+      }
+
+      this.setState({
+        canIclick: true,
+        disabled: false
+      });
+    })
+  }, {
+    key: "setInterval",
+    value: function (_setInterval) {
+      function setInterval() {
+        return _setInterval.apply(this, arguments);
+      }
+
+      setInterval.toString = function () {
+        return _setInterval.toString();
+      };
+
+      return setInterval;
+    }(function () {
+      if (!this.state.canIclick) return false;
+      var that = this;
+      interval = setInterval(function () {
+        that.props.setN(that.props.n + 1);
+      }, 1000);
+      this.setState({
+        disabled: true,
+        canIclick: false
+      });
+    })
+  }, {
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      console.log('Counter Mount！');
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      console.log('Counter unmount！');
+    }
+  }, {
     key: "render",
     value: function render() {
-      var _this = this;
-
       return _SmpReact.default.createElement({
         elementName: "div",
         attributes: {
@@ -1183,37 +1486,33 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this.props.add();
-                }
+                className: this.state.disabled ? 'ban' : '',
+                id: 1,
+                onClick: this.calc
               },
               children: ["+1"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this.props.minus();
-                }
+                className: this.state.disabled ? 'ban' : '',
+                id: 2,
+                onClick: this.calc
               },
               children: ["-1"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this.props.mult();
-                }
+                className: this.state.disabled ? 'ban' : '',
+                id: 3,
+                onClick: this.calc
               },
               children: ["\xD72"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.props.disabled && 'ban',
-                onClick: function onClick() {
-                  return _this.props.clear();
-                }
+                className: this.state.disabled ? 'ban' : '',
+                id: 4,
+                onClick: this.calc
               },
               children: ["clear"]
             })]
@@ -1225,17 +1524,13 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                onClick: function onClick() {
-                  return _this.props.setInterval();
-                }
+                onClick: this.setInterval
               },
               children: ["setInterval"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                onClick: function onClick() {
-                  return _this.props.clearInterval();
-                }
+                onClick: this.clearInterval
               },
               children: ["clearInterval"]
             })]
@@ -1249,6 +1544,172 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = Counter;
+},{"../../SmpReact/SmpReact":"opxX","./style.css":"EQHX"}],"YvTQ":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _SmpReact = _interopRequireDefault(require("../../SmpReact/SmpReact"));
+
+require("./style.css");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
+  _inherits(TodoList, _SmpReact$Component);
+
+  var _super = _createSuper(TodoList);
+
+  function TodoList(props) {
+    var _this;
+
+    _classCallCheck(this, TodoList);
+
+    _this = _super.call(this, props);
+
+    _this.handleAdd = function () {
+      /*  箭头函数中的this相当于应用了闭包。
+      *   由于箭头函数中没有this，所以在声明时绑定了this为所在词法环境中的this。
+      *   this指向了组件实例。
+      * */
+      console.log(_assertThisInitialized(_this));
+      var res = window.prompt('请输入待办事项');
+      if (res === null || res === "") return;else {
+        var list = _this.props.list;
+        list.unshift({
+          content: res,
+          id: new Date().valueOf()
+        });
+
+        _this.props.setList(list);
+      }
+    };
+
+    _this.handleDelete = _this.handleDelete.bind(_assertThisInitialized(_this));
+    _this.handleFinish = _this.handleFinish.bind(_assertThisInitialized(_this));
+    _this.handleAdd = _this.handleAdd.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(TodoList, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      console.log('todoList Mount！');
+    }
+  }, {
+    key: "handleFinish",
+    value: function handleFinish(e) {
+      var list = this.props.list;
+      var len = list.length,
+          newList = [],
+          finishItem;
+
+      for (var i = 0; i < len; i++) {
+        if (parseInt(list[i].id) === parseInt(e.target.id)) {
+          if (list[i].done === true) return;
+          list[i].done = true;
+          finishItem = list[i];
+        } else newList.push(list[i]);
+      }
+
+      newList.push(finishItem);
+      this.props.setList(newList);
+    }
+  }, {
+    key: "handleDelete",
+    value: function handleDelete(e) {
+      this.props.setList(this.props.list.filter(function (v) {
+        return parseInt(v.id) !== parseInt(e.target.id);
+      }));
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this2 = this;
+
+      return _SmpReact.default.createElement({
+        elementName: "div",
+        attributes: {
+          className: "listWrapper todoWrapper"
+        },
+        children: [this.props.list.map(function (v) {
+          return _SmpReact.default.createElement({
+            elementName: "div",
+            attributes: {
+              key: v.id,
+              className: "card"
+            },
+            children: [_SmpReact.default.createElement({
+              elementName: "div",
+              attributes: {
+                className: (v.done ? 'finish-text' : '') + " card-content"
+              },
+              children: [v.content]
+            }), _SmpReact.default.createElement({
+              elementName: "div",
+              attributes: {
+                className: "card-btn"
+              },
+              children: [_SmpReact.default.createElement({
+                elementName: "button",
+                attributes: {
+                  className: "finish-btn",
+                  id: v.id,
+                  onClick: _this2.handleFinish
+                },
+                children: ["\u5B8C\u6210"]
+              }), _SmpReact.default.createElement({
+                elementName: "button",
+                attributes: {
+                  className: "del-btn",
+                  id: v.id,
+                  onClick: _this2.handleDelete
+                },
+                children: ["\u5220\u9664"]
+              })]
+            })]
+          });
+        }), _SmpReact.default.createElement({
+          elementName: "div",
+          attributes: {
+            className: "newItem",
+            onClick: this.handleAdd
+          },
+          children: ["\u6DFB\u52A0"]
+        })]
+      });
+    }
+  }]);
+
+  return TodoList;
+}(_SmpReact.default.Component);
+
+exports.default = TodoList;
 },{"../../SmpReact/SmpReact":"opxX","./style.css":"EQHX"}],"DPRK":[function(require,module,exports) {
 "use strict";
 
@@ -1266,6 +1727,8 @@ var _Header = _interopRequireDefault(require("./src/components/Header/Header"));
 var _Footer = _interopRequireDefault(require("./src/components/Footer/Footer"));
 
 var _Counter = _interopRequireDefault(require("./src/components/Counter/Counter"));
+
+var _TodoList = _interopRequireDefault(require("./src/components/TodoList/TodoList"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1304,72 +1767,33 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
     _this = _super.call(this);
     _this.state = {
       n: 0,
-      interval: null,
-      flag: true,
-      disabled: false
+      list: [{
+        content: "周末去爬山！",
+        id: 0,
+        done: false
+      }, {
+        content: "周五收拾房间！",
+        id: 1,
+        done: false
+      }],
+      page: 0
     };
 
-    _this.calc = function (type) {
-      switch (type) {
-        case 0:
-          _this.setState({
-            n: _this.state.n + 1
-          });
-
-          break;
-
-        case 1:
-          _this.setState({
-            n: _this.state.n - 1
-          });
-
-          break;
-
-        case 2:
-          _this.setState({
-            n: 2 * _this.state.n
-          });
-
-          break;
-
-        case 3:
-          _this.setState({
-            n: 0
-          });
-
-          break;
-
-        default:
-          throw new Error();
-      }
-    };
-
-    _this.setInterval = function () {
-      if (!_this.state.flag) return false;
-
-      var that = _assertThisInitialized(_this);
-
+    _this.setN = function (newN) {
       _this.setState({
-        disabled: true,
-        interval: setInterval(function () {
-          that.setState({
-            n: that.state.n + 1
-          });
-        }, 1000),
-        flag: false
+        n: newN
       });
     };
 
-    _this.clearInterval = function () {
-      if (_this.state.flag === false) {
-        clearInterval(_this.state.interval);
-        window.alert("定时器已关闭");
-      }
-
+    _this.setPage = function (newPage) {
       _this.setState({
-        flag: true,
-        interval: null,
-        disabled: false
+        page: newPage
+      });
+    };
+
+    _this.setList = function (newList) {
+      _this.setState({
+        list: newList
       });
     };
 
@@ -1388,7 +1812,12 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
         },
         children: [_SmpReact.default.createElement({
           elementName: _Header.default,
-          attributes: {},
+          attributes: {
+            setPage: function setPage(n) {
+              return _this2.setPage(n);
+            },
+            page: this.state.page
+          },
           children: null
         }), _SmpReact.default.createElement({
           elementName: "main",
@@ -1396,27 +1825,19 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
           children: [_SmpReact.default.createElement({
             elementName: _Counter.default,
             attributes: {
-              disabled: this.state.disabled,
-              n: this.state.n,
-              interval: this.state.interval,
-              add: function add() {
-                return _this2.calc(0);
+              className: this.state.page === 1 ? 'none' : '',
+              setN: function setN(n) {
+                _this2.setN(n);
               },
-              minus: function minus() {
-                return _this2.calc(1);
-              },
-              mult: function mult() {
-                return _this2.calc(2);
-              },
-              clear: function clear() {
-                return _this2.calc(3);
-              },
-              setInterval: function setInterval() {
-                return _this2.setInterval();
-              },
-              clearInterval: function clearInterval() {
-                return _this2.clearInterval();
-              }
+              n: this.state.n
+            },
+            children: null
+          }), _SmpReact.default.createElement({
+            elementName: _TodoList.default,
+            attributes: {
+              className: this.state.page === 0 ? 'none' : '',
+              list: this.state.list,
+              setList: this.setList
             },
             children: null
           })]
@@ -1433,7 +1854,7 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
 }(_SmpReact.default.Component);
 
 exports.default = App;
-},{"./src/SmpReact/SmpReact":"opxX","./App.css":"EQHX","./src/components/Header/Header":"nikT","./src/components/Footer/Footer":"vyL3","./src/components/Counter/Counter":"iR8q"}],"deHo":[function(require,module,exports) {
+},{"./src/SmpReact/SmpReact":"opxX","./App.css":"EQHX","./src/components/Header/Header":"nikT","./src/components/Footer/Footer":"vyL3","./src/components/Counter/Counter":"iR8q","./src/components/TodoList/TodoList":"YvTQ"}],"deHo":[function(require,module,exports) {
 "use strict";
 
 var _SmpReact = _interopRequireDefault(require("./src/SmpReact/SmpReact"));
@@ -1450,4 +1871,4 @@ _SmpReactDom.default.render(_SmpReact.default.createElement({
   children: null
 }), document.getElementById("root"));
 },{"./src/SmpReact/SmpReact":"opxX","./src/SmpReact/SmpReactDom":"Ki7F","./App":"DPRK"}]},{},["deHo"], null)
-//# sourceMappingURL=simple-react.54dec209.js.map
+//# sourceMappingURL=simple-react.e9656d1d.js.map
