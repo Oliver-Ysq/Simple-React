@@ -684,7 +684,7 @@ function addVNodes(domElm, before, children, start, end) {
 
       _dom.default.insertAfter(domElm, newDom, before);
 
-      (0, _lifeCycle.triggerHook)(children[i].vnode, 'insert');
+      (0, _lifeCycle.triggerHook)(newDom.vnode, 'insert');
     }
 
     before = newDom;
@@ -1681,8 +1681,28 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
     _classCallCheck(this, TodoList);
 
     _this = _super.call(this, props);
+
+    _this.handleAdd = function () {
+      /*  箭头函数中的this相当于应用了闭包。
+      *   由于箭头函数中没有this，所以在声明时绑定了this为所在词法环境中的this。
+      *   this指向了组件实例。
+      * */
+      console.log(_assertThisInitialized(_this));
+      var res = window.prompt('请输入待办事项');
+      if (res === null || res === "") return;else {
+        var list = _this.props.list;
+        list.unshift({
+          content: res,
+          id: new Date().valueOf()
+        });
+
+        _this.props.setList(list);
+      }
+    };
+
     _this.handleDelete = _this.handleDelete.bind(_assertThisInitialized(_this));
     _this.handleFinish = _this.handleFinish.bind(_assertThisInitialized(_this));
+    _this.handleAdd = _this.handleAdd.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -1767,7 +1787,8 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
         }), _SmpReact.default.createElement({
           elementName: "div",
           attributes: {
-            className: "newItem"
+            className: "newItem",
+            onClick: this.handleAdd
           },
           children: ["\u6DFB\u52A0"]
         })]
@@ -1837,19 +1858,15 @@ var App = /*#__PURE__*/function (_SmpReact$Component) {
     _this.state = {
       n: 0,
       list: [{
-        content: "周末去爬山",
+        content: "周末去爬山！",
         id: 0,
         done: false
       }, {
-        content: "周五之前把作业写完",
+        content: "周五收拾房间！",
         id: 1,
         done: false
-      }, {
-        content: "刷鞋",
-        id: 2,
-        done: false
       }],
-      page: 1
+      page: 0
     };
 
     _this.setN = function (newN) {
@@ -1971,7 +1988,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6356" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "7951" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

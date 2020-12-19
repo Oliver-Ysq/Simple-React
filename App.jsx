@@ -10,22 +10,14 @@ export default class App extends SmpReact.Component {
     super();
     this.state = {
       n: 0,
-      list: [{content: "周末去爬山", id: 0, done: false}, {content: "周五之前把作业写完", id: 1, done: false},
-        {content: "刷鞋", id: 2, done: false}],
-      page: 1,
+      list: [{content: "周末去爬山！", id: 0, done: false}, {content: "周五收拾房间！", id: 1, done: false}],
+
+      page: 0,
     };
 
-    this.setN = (newN) => {
-      this.setState({n: newN});
-    };
-
-    this.setPage = (newPage) => {
-      this.setState({page: newPage});
-    };
-
-    this.setList = (newList) => {
-      this.setState({list: newList});
-    };
+    this.setN = (newN) => {this.setState({n: newN});};
+    this.setPage = (newPage) => {this.setState({page: newPage});};
+    this.setList = (newList) => {this.setState({list: newList});};
 
   };
 

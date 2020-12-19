@@ -242,23 +242,13 @@ button:hover {
     cursor: pointer;
 }
 
-button:active {
-    box-shadow: inset 1px 1px 1px #DFDFDF;
-}
+button:active {box-shadow: inset 1px 1px 1px #DFDFDF;}
 
-.finish-btn {
-    background: #333;
-    color: #eee;
-}
+.finish-btn { background: #333;color: #eee;}
 
-.del-btn {
-    background: orangered;
-    color: #eee;
-}
+.del-btn { background: orangered;olor: #eee;}
 
-.finish-text {
-    text-decoration: line-through;
-}
+.finish-text { text-decoration: line-through;}
 
 .newItem {
     position: absolute;
@@ -277,5 +267,7 @@ button:active {
     font-weight: bolder;
     font-size: 15px;
 }
+
+.newItem:hover {cursor: pointer;}
 
 /*# sourceMappingURL=/simple-react.78399e21.css.map */

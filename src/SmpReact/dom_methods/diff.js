@@ -154,7 +154,7 @@ function addVNodes(domElm, before, children, start, end) {
     } else {
       newDom = createDomElement(children[i]);
       dom.insertAfter(domElm, newDom, before);
-      triggerHook(children[i].vnode, 'insert');
+      triggerHook(newDom.vnode, 'insert');
     }
     before = newDom;
   }

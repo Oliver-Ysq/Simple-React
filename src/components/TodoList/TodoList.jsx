@@ -6,6 +6,7 @@ export default class TodoList extends SmpReact.Component {
     super(props);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleFinish = this.handleFinish.bind(this);
+    this.handleAdd = this.handleAdd.bind(this);
   }
 
   componentDidMount() {
@@ -30,6 +31,21 @@ export default class TodoList extends SmpReact.Component {
     this.props.setList(this.props.list.filter(v => parseInt(v.id) !== parseInt(e.target.id)));
   }
 
+  handleAdd = () => {
+    /*  箭头函数中的this相当于应用了闭包。
+    *   由于箭头函数中没有this，所以在声明时绑定了this为所在词法环境中的this。
+    *   this指向了组件实例。
+    * */
+    console.log(this);
+    let res = window.prompt('请输入待办事项');
+    if (res === null || res === "") return;
+    else {
+      let list = this.props.list;
+      list.unshift({content: res, id: new Date().valueOf()});
+      this.props.setList(list);
+    }
+  };
+
   render() {
     return (
       <div className="listWrapper todoWrapper">
@@ -46,7 +62,7 @@ export default class TodoList extends SmpReact.Component {
             </div>
           );
         })}
-        <div className="newItem">添加</div>
+        <div className="newItem" onClick={this.handleAdd}>添加</div>
       </div>
     );
   }
