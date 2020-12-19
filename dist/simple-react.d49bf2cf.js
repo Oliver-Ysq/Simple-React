@@ -1486,7 +1486,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled ? 'ban' : '',
+                className: 'button ' + (this.state.disabled ? 'ban' : ''),
                 id: 1,
                 onClick: this.calc
               },
@@ -1494,7 +1494,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled ? 'ban' : '',
+                className: 'button ' + (this.state.disabled ? 'ban' : ''),
                 id: 2,
                 onClick: this.calc
               },
@@ -1502,7 +1502,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled ? 'ban' : '',
+                className: 'button ' + (this.state.disabled ? 'ban' : ''),
                 id: 3,
                 onClick: this.calc
               },
@@ -1510,7 +1510,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
-                className: this.state.disabled ? 'ban' : '',
+                className: 'button ' + (this.state.disabled ? 'ban' : ''),
                 id: 4,
                 onClick: this.calc
               },
@@ -1524,12 +1524,14 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "button",
               attributes: {
+                className: "button",
                 onClick: this.setInterval
               },
               children: ["setInterval"]
             }), _SmpReact.default.createElement({
               elementName: "button",
               attributes: {
+                className: "button",
                 onClick: this.clearInterval
               },
               children: ["clearInterval"]
@@ -1678,7 +1680,7 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
               children: [_SmpReact.default.createElement({
                 elementName: "button",
                 attributes: {
-                  className: "finish-btn",
+                  className: "btn finish-btn",
                   id: v.id,
                   onClick: _this2.handleFinish
                 },
@@ -1686,7 +1688,7 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
               }), _SmpReact.default.createElement({
                 elementName: "button",
                 attributes: {
-                  className: "del-btn",
+                  className: "btn del-btn",
                   id: v.id,
                   onClick: _this2.handleDelete
                 },
@@ -1871,4 +1873,4 @@ _SmpReactDom.default.render(_SmpReact.default.createElement({
   children: null
 }), document.getElementById("root"));
 },{"./src/SmpReact/SmpReact":"opxX","./src/SmpReact/SmpReactDom":"Ki7F","./App":"DPRK"}]},{},["deHo"], null)
-//# sourceMappingURL=simple-react.e9656d1d.js.map
+//# sourceMappingURL=simple-react.d49bf2cf.js.map
