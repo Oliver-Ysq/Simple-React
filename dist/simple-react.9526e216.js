@@ -1599,7 +1599,6 @@ var TodoList = /*#__PURE__*/function (_SmpReact$Component) {
       *   由于箭头函数中没有this，所以在声明时绑定了this为所在词法环境中的this。
       *   this指向了组件实例。
       * */
-      console.log(_assertThisInitialized(_this));
       var res = window.prompt('请输入待办事项');
       if (res === null || res === "") return;else {
         var list = _this.props.list;
@@ -1873,4 +1872,4 @@ _SmpReactDom.default.render(_SmpReact.default.createElement({
   children: null
 }), document.getElementById("root"));
 },{"./src/SmpReact/SmpReact":"opxX","./src/SmpReact/SmpReactDom":"Ki7F","./App":"DPRK"}]},{},["deHo"], null)
-//# sourceMappingURL=simple-react.e87463a1.js.map
+//# sourceMappingURL=simple-react.9526e216.js.map

@@ -36,7 +36,6 @@ export default class TodoList extends SmpReact.Component {
     *   由于箭头函数中没有this，所以在声明时绑定了this为所在词法环境中的this。
     *   this指向了组件实例。
     * */
-    console.log(this);
     let res = window.prompt('请输入待办事项');
     if (res === null || res === "") return;
     else {

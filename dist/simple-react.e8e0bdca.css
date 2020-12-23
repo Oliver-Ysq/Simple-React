@@ -311,10 +311,10 @@ a {
 
 .newItem {
     position: absolute;
-    right: 30px;
-    bottom: 30px;
-    width: 3rem;
-    height: 3rem;
+    right: -5rem;
+    bottom: 0;
+    width: 4rem;
+    height: 4rem;
     border-radius: 50%;
 
     display: flex;
@@ -324,9 +324,8 @@ a {
     color: #333;
     background: orange;
     font-weight: bolder;
-    font-size: 15px;
-
-    box-shadow: 0 0 12px 2px #aaa;
+    font-size: 1rem;
+    box-shadow: 0 0 12px 2px #444;
 }
 
 .newItem:hover {cursor: pointer;}
@@ -341,8 +340,11 @@ a {
     .btn {font-size: 0.8rem;}
 
     .newItem {
-        right: 0;bottom: -4rem;
-        box-shadow: 0 0 12px 2px #444;
+        width: 3rem;
+        height: 3rem;
+        right: 0;
+        bottom: -3.8rem;
+        font-size: 14px;
     }
 }
 
@@ -350,4 +352,4 @@ a {
     .card {min-height: 4rem;}
 }
 
-/*# sourceMappingURL=simple-react.97804ad3.css.map */
+/*# sourceMappingURL=simple-react.e8e0bdca.css.map */
