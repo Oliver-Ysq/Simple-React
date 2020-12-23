@@ -51,10 +51,10 @@ main {
 }
 
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     main {
         padding: 30px 0px 10px 0px;
-        font-size: 16px;
+        font-size: 1rem;
     }
 
     .page {
@@ -123,7 +123,7 @@ main {
     margin-left: 20px;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     .wrapper {
         padding: 10px 5vw;
     }
@@ -233,9 +233,9 @@ a {
     animation: fade-in 0.8s;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     .button {
-        font-size: 16px;
+        font-size: 1rem;
     }
 
     .listWrapper {
@@ -244,9 +244,6 @@ a {
 
     .maxH {
         max-height: 560px;
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
     }
 }
 .todoWrapper {
@@ -332,7 +329,7 @@ a {
 
 .newItem:hover {cursor: pointer;}
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     .card {
         width: 98%;
         padding-top: 1rem;
@@ -347,8 +344,8 @@ a {
     }
 }
 
-@media (min-width: 500px) {
+@media (min-width: 700px) {
     .card {min-height: 4rem;}
 }
 
-/*# sourceMappingURL=simple-react.3d5dd21c.css.map */
+/*# sourceMappingURL=simple-react.812628c3.css.map */

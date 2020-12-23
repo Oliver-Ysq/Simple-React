@@ -67,9 +67,9 @@
     animation: fade-in 0.8s;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     .button {
-        font-size: 16px;
+        font-size: 1rem;
     }
 
     .listWrapper {
@@ -78,8 +78,5 @@
 
     .maxH {
         max-height: 560px;
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
     }
 }
