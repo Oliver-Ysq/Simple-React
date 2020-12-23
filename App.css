@@ -38,18 +38,6 @@ main {
 }
 
 
-.listWrapper {
-    width: 80%;
-    border-radius: 24px;
-    box-shadow: 0px 5px 10px 3px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(-90deg, rgb(36, 41, 46) 0%, rgb(187, 187, 187) 100%);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fade-in 0.8s;
-}
-
 @keyframes fade-in {
     0% {
         opacity: 0;
@@ -59,5 +47,17 @@ main {
     }
     100% {
         opacity: 1;
+    }
+}
+
+
+@media (max-width: 500px) {
+    main {
+        padding: 30px 0px 10px 0px;
+        font-size: 16px;
+    }
+
+    .page {
+        justify-content: space-between;
     }
 }

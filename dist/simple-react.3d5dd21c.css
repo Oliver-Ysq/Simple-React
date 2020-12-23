@@ -38,18 +38,6 @@ main {
 }
 
 
-.listWrapper {
-    width: 80%;
-    border-radius: 24px;
-    box-shadow: 0px 5px 10px 3px rgba(0, 0, 0, 0.1);
-    background: linear-gradient(-90deg, rgb(36, 41, 46) 0%, rgb(187, 187, 187) 100%);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    animation: fade-in 0.8s;
-}
-
 @keyframes fade-in {
     0% {
         opacity: 0;
@@ -62,13 +50,28 @@ main {
     }
 }
 
+
+@media (max-width: 500px) {
+    main {
+        padding: 30px 0px 10px 0px;
+        font-size: 16px;
+    }
+
+    .page {
+        justify-content: space-between;
+    }
+}
+
 .wrapper {
+    box-sizing: border-box;
     background: rgb(36, 41, 46);
     padding: 10px 120px;
     color: #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100vw;
+    overflow: hidden;
 }
 
 .box {
@@ -111,6 +114,35 @@ main {
     color: #eee;
     font-size: 14px;
     margin-right: 12px;
+}
+
+.leftTitle {
+    color: #eee;
+    font-size: 24px;
+    margin-right: 12px;
+    margin-left: 20px;
+}
+
+@media (max-width: 500px) {
+    .wrapper {
+        padding: 10px 5vw;
+    }
+
+    .tips {
+        display: none;
+    }
+
+    .title {
+        margin-right: 2px;
+        margin-left: 10px;
+        font-size: 18px;
+    }
+
+    .leftTitle {
+        font-size: 1rem;
+        margin-left: 12px;
+        margin-right: 16px;
+    }
 }
 footer {
     padding-top: 10px;
@@ -159,7 +191,7 @@ a {
     color: #444444;
     background: #F3F3F3;
     border: 1px #DADADA solid;
-    padding: 10px 10px;
+    padding: 0.5rem 0.6rem;
     margin-left: 10px;
     margin-right: 10px;
     min-width: 10vw;
@@ -188,18 +220,46 @@ a {
 .ban:hover {
     cursor: not-allowed;
 }
+
+.listWrapper {
+    width: 80%;
+    border-radius: 24px;
+    box-shadow: 0px 5px 10px 3px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(-90deg, rgb(36, 41, 46) 0%, rgb(187, 187, 187) 100%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fade-in 0.8s;
+}
+
+@media (max-width: 500px) {
+    .button {
+        font-size: 16px;
+    }
+
+    .listWrapper {
+        width: 90%;
+    }
+
+    .maxH {
+        max-height: 560px;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
 .todoWrapper {
+    box-sizing: border-box;
     padding: 1.5rem;
     position: relative;
 }
 
 .card {
     width: 80%;
-    min-height: 4rem;
     margin-left: auto;
     margin-right: auto;
     border-radius: 12px;
-
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -212,13 +272,13 @@ a {
 
 .card-content {
     width: 50%;
+    padding: 0.5rem;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
 
     font-size: 14px;
+    word-break: break-all;
 }
 
 .card-btn {
@@ -229,24 +289,20 @@ a {
 .btn {
     /*border: 1px #DADADA solid;*/
     padding: 8px 10px;
-    margin-left: 10px;
-    margin-right: 0px;
+    /*margin-left: 0.5rem;*/
+    margin-right: 0.5rem;
     min-width: 8vw;
     border-radius: 6px;
     font-weight: bold;
     font-size: 1rem;
     outline: none;
+    white-space: nowrap;
 }
 
 .btn:hover {
-    border: 1px #C6C6C6 solid;
     box-shadow: 1px 1px 1px #EAEAEA;
-    color: #000;
-    background: #acacac;
     cursor: pointer;
 }
-
-.btn:active {box-shadow: inset 1px 1px 1px #DFDFDF;}
 
 .finish-btn { background: #333;color: #eee;}
 
@@ -258,8 +314,8 @@ a {
     position: absolute;
     right: 30px;
     bottom: 30px;
-    width: 50px;
-    height: 50px;
+    width: 3rem;
+    height: 3rem;
     border-radius: 50%;
 
     display: flex;
@@ -276,4 +332,23 @@ a {
 
 .newItem:hover {cursor: pointer;}
 
-/*# sourceMappingURL=simple-react.a626b445.css.map */
+@media (max-width: 500px) {
+    .card {
+        width: 98%;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .btn {font-size: 0.8rem;}
+
+    .newItem {
+        right: 0;bottom: -3.6rem;
+        box-shadow: 0 0 12px 2px #444;
+    }
+}
+
+@media (min-width: 500px) {
+    .card {min-height: 4rem;}
+}
+
+/*# sourceMappingURL=simple-react.3d5dd21c.css.map */

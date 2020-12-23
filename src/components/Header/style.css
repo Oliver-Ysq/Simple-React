@@ -1,10 +1,13 @@
 .wrapper {
+    box-sizing: border-box;
     background: rgb(36, 41, 46);
     padding: 10px 120px;
     color: #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100vw;
+    overflow: hidden;
 }
 
 .box {
@@ -47,4 +50,33 @@
     color: #eee;
     font-size: 14px;
     margin-right: 12px;
+}
+
+.leftTitle {
+    color: #eee;
+    font-size: 24px;
+    margin-right: 12px;
+    margin-left: 20px;
+}
+
+@media (max-width: 500px) {
+    .wrapper {
+        padding: 10px 5vw;
+    }
+
+    .tips {
+        display: none;
+    }
+
+    .title {
+        margin-right: 2px;
+        margin-left: 10px;
+        font-size: 18px;
+    }
+
+    .leftTitle {
+        font-size: 1rem;
+        margin-left: 12px;
+        margin-right: 16px;
+    }
 }

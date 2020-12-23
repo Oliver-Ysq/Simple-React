@@ -1194,9 +1194,9 @@ var Header = /*#__PURE__*/function (_SmpReact$Component) {
             children: [_SmpReact.default.createElement({
               elementName: "div",
               attributes: {
-                className: "title"
+                className: "leftTitle"
               },
-              children: ["Counter-Demo"]
+              children: ["SmpReact"]
             }), _SmpReact.default.createElement({
               elementName: "div",
               attributes: {
@@ -1467,7 +1467,7 @@ var Counter = /*#__PURE__*/function (_SmpReact$Component) {
       return _SmpReact.default.createElement({
         elementName: "div",
         attributes: {
-          className: "listWrapper"
+          className: "listWrapper maxH"
         },
         children: [_SmpReact.default.createElement({
           elementName: "div",
@@ -1873,4 +1873,4 @@ _SmpReactDom.default.render(_SmpReact.default.createElement({
   children: null
 }), document.getElementById("root"));
 },{"./src/SmpReact/SmpReact":"opxX","./src/SmpReact/SmpReactDom":"Ki7F","./App":"DPRK"}]},{},["deHo"], null)
-//# sourceMappingURL=simple-react.d49bf2cf.js.map
+//# sourceMappingURL=simple-react.7e0fc375.js.map

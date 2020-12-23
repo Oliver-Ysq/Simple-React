@@ -1,15 +1,14 @@
 .todoWrapper {
+    box-sizing: border-box;
     padding: 1.5rem;
     position: relative;
 }
 
 .card {
     width: 80%;
-    min-height: 4rem;
     margin-left: auto;
     margin-right: auto;
     border-radius: 12px;
-
     display: flex;
     flex-direction: row;
     justify-content: space-around;
@@ -22,13 +21,13 @@
 
 .card-content {
     width: 50%;
+    padding: 0.5rem;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
 
     font-size: 14px;
+    word-break: break-all;
 }
 
 .card-btn {
@@ -39,24 +38,20 @@
 .btn {
     /*border: 1px #DADADA solid;*/
     padding: 8px 10px;
-    margin-left: 10px;
-    margin-right: 0px;
+    /*margin-left: 0.5rem;*/
+    margin-right: 0.5rem;
     min-width: 8vw;
     border-radius: 6px;
     font-weight: bold;
     font-size: 1rem;
     outline: none;
+    white-space: nowrap;
 }
 
 .btn:hover {
-    border: 1px #C6C6C6 solid;
     box-shadow: 1px 1px 1px #EAEAEA;
-    color: #000;
-    background: #acacac;
     cursor: pointer;
 }
-
-.btn:active {box-shadow: inset 1px 1px 1px #DFDFDF;}
 
 .finish-btn { background: #333;color: #eee;}
 
@@ -68,8 +63,8 @@
     position: absolute;
     right: 30px;
     bottom: 30px;
-    width: 50px;
-    height: 50px;
+    width: 3rem;
+    height: 3rem;
     border-radius: 50%;
 
     display: flex;
@@ -85,3 +80,22 @@
 }
 
 .newItem:hover {cursor: pointer;}
+
+@media (max-width: 500px) {
+    .card {
+        width: 98%;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .btn {font-size: 0.8rem;}
+
+    .newItem {
+        right: 0;bottom: -3.6rem;
+        box-shadow: 0 0 12px 2px #444;
+    }
+}
+
+@media (min-width: 500px) {
+    .card {min-height: 4rem;}
+}

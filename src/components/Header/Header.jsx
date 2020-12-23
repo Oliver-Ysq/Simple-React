@@ -13,7 +13,7 @@ export default class Header extends SmpReact.Component {
         <div class="box">
           <img className="logo" src={imgsrc} alt=""/>
           <div class="textWrapper">
-            <div className="title">Counter-Demo</div>
+            <div className="leftTitle">SmpReact</div>
             <div className="tips">powered by SmpReact</div>
           </div>
         </div>

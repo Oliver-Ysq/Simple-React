@@ -70,7 +70,7 @@ export default class Counter extends SmpReact.Component {
 
   render() {
     return (
-      <div className="listWrapper">
+      <div className="listWrapper maxH">
         <div className="display">{this.props.n}</div>
         <div className="btnWrapper">
           <div>
