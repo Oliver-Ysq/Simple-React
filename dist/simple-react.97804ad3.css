@@ -29,8 +29,9 @@ main {
     flex: 1;
     padding: 30px 120px 10px 120px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 
 .none {
@@ -222,6 +223,7 @@ a {
 }
 
 .listWrapper {
+    flex: 1;
     width: 80%;
     border-radius: 24px;
     box-shadow: 0px 5px 10px 3px rgba(0, 0, 0, 0.1);
@@ -339,7 +341,7 @@ a {
     .btn {font-size: 0.8rem;}
 
     .newItem {
-        right: 0;bottom: -3.6rem;
+        right: 0;bottom: -4rem;
         box-shadow: 0 0 12px 2px #444;
     }
 }
@@ -348,4 +350,4 @@ a {
     .card {min-height: 4rem;}
 }
 
-/*# sourceMappingURL=simple-react.812628c3.css.map */
+/*# sourceMappingURL=simple-react.97804ad3.css.map */

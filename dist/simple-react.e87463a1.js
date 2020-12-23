@@ -1873,4 +1873,4 @@ _SmpReactDom.default.render(_SmpReact.default.createElement({
   children: null
 }), document.getElementById("root"));
 },{"./src/SmpReact/SmpReact":"opxX","./src/SmpReact/SmpReactDom":"Ki7F","./App":"DPRK"}]},{},["deHo"], null)
-//# sourceMappingURL=simple-react.a274f709.js.map
+//# sourceMappingURL=simple-react.e87463a1.js.map
